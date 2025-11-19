@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Breathflow Ratios</title>
+<style>
+  :root{
+    --bg:#fef9e7;
+    --card: rgba(255,255,255,0.62);
+    --accent:#ffd966;
+    --accent-2:#f1c232;
+    --muted:#6f6f6f;
+    --text:#222;
+    --arc-inhale:#26a69a; /* green */
+    --arc-hold:#f6b93b;   /* amber */
+    --arc-exhale:#4a90e2; /* blue */
+    --active-red:#d9302a; /* red for active label */
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg); color:var(--text); padding:18px;
+  }
+  .card{width:100%;max-width:980px;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,0.08);text-align:center}
+  h1{margin:2px 0 10px 0;font-size:24px}
+  .top-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+  select,input[type=number]{padding:8px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:15px}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;text-align:left}
+  .desc{font-size:14px;color:var(--muted);margin-top:6px}
+
+  /* Phase boxes line */
+  .phase-row{display:flex;gap:12px;align-items:end;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
+  .phase-box{display:flex;flex-direction:column;min-width:110px;max-width:220px;flex:1}
+  input[readonly]{background:#f5f5f5}
+
+  /* under-row */
+  .under-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
+  .block{min-width:140px;max-width:360px;flex:1;display:flex;flex-direction:column;align-items:stretch}
+  .session-tiny{font-size:14px;color:var(--muted);font-weight:700;margin-top:6px;text-align:center}
+
+  .external-row{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px;flex-wrap:wrap}
+  .small-btn{padding:8px 10px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
+  .load-btn{background:#e6f7ff;border:1px solid #8fd4ff}
+
+  .buttons{display:flex;gap:10px;justify-content:center;margin:8px 0}
+  button{padding:10px 14px;border-radius:10px;border:none;background:var(--accent);cursor:pointer;font-weight:700}
+  button:hover:not(:disabled){background:var(--accent-2)}
+  button:disabled{opacity:.55;cursor:not-allowed}
+
+  .loader-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px}
+  .loader{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center}
+  /* short rotating arc (22.5deg) - color set dynamically via JS */
+  .spinner{position:absolute;width:100%;height:100%;border-radius:50%;
+           background: conic-gradient(var(--arc-inhale) 0deg 22.5deg, #111 22.5deg 360deg);
+           transform:rotate(0deg)}
+  .spinner::after{content:"";position:absolute;inset:16px;border-radius:50%;background:#ffef8f}
+  .phase-center{position:relative;z-index:2;font-size:44px;font-weight:800;user-select:none}
+  .phase-labels{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:8px}
+  .phase-labels .label{padding:8px 12px;border-radius:999px;font-weight:700;color:var(--muted);background:rgba(0,0,0,0.03);min-width:84px;text-align:center}
+  /* active label becomes red background + white text */
+  .phase-labels .label.active{background:var(--active-red);color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.12);transform:translateY(-2px)}
+  .status-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  .status-text{font-size:14px;color:var(--muted);max-width:900px;text-align:center}
+
+  @keyframes spinOnce{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  @media (max-width:720px){ .loader{width:180px;height:180px} .phase-center{font-size:36px} }
+</style>
+</head>
+<body>
+  <div class="card" role="application" aria-label="Breathflow Ratios">
+    <h1>Breathflow Ratios</h1>
+
+    <div class="top-row" aria-hidden="false">
+      <div>
+        <label for="ratioSelect">Choose ratio</label>
+        <select id="ratioSelect" aria-label="Breathing ratio">
+          <option value="1:1">1:1 (default)</option>
+          <option value="1:2:4">1:2:4</option>
+          <option value="1:1:1">1:1:1</option>
+          <option value="1:1:1:1">1:1:1:1</option>
+        </select>
+      </div>
+      <div style="min-width:320px;max-width:520px;text-align:left">
+        <div style="font-weight:700">Description</div>
+        <div id="ratioDesc" class="desc">Inhale and exhale for equal seconds.</div>
+      </div>
+    </div>
+
+    <!-- Dynamic phase boxes (first editable only) -->
+    <div id="phaseRow" class="phase-row" aria-live="polite"></div>
+
+    <!-- Under row: rounds preview and sound options -->
+    <div class="under-row">
+      <div class="block">
+        <label for="roundsInput">Rounds (count)</label>
+        <input id="roundsInput" type="number" min="1" max="999" value="7"/>
+      </div>
+
+      <div class="block" style="align-items:center">
+        <label style="visibility:hidden">session timer label</label>
+        <div id="sessionTimerDisplay" class="session-tiny">Session remaining: 00:00</div>
+      </div>
+
+      <div class="block">
+        <label for="soundSelect">End sound (plays up to 10s)</label>
+        <select id="soundSelect">
+          <option value="builtin_harp">Harp Breeze (builtin)</option>
+          <option value="builtin_chimes">Wind Chimes (builtin)</option>
+          <option value="builtin_bowl">Tibetan Bowl (builtin)</option>
+          <option value="builtin_bell">Soft Bell (builtin)</option>
+          <option value="builtin_ocean">Ocean Wave (builtin)</option>
+          <option value="external">Use external sound (paste URL below)</option>
+        </select>
+        <div class="external-row">
+          <input id="externalUrl" type="text" placeholder="Paste direct audio file URL (mp3/wav)" />
+          <button id="loadExternalBtn" class="small-btn load-btn">Load</button>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;align-items:center">
+          <button id="findSoundsBtn" class="small-btn">Find free sounds (online)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn" disabled>Pause</button>
+      <button id="stopBtn" disabled>Stop</button>
+    </div>
+
+    <div class="loader-wrap">
+      <div class="loader" aria-live="polite" aria-atomic="true">
+        <div id="spinner" class="spinner" aria-hidden="true"></div>
+        <div class="phase-center" id="phaseTimer">0</div>
+      </div>
+
+      <div id="labels" class="phase-labels" aria-hidden="false">
+        <!-- labels created dynamically -->
+      </div>
+    </div>
+
+    <div class="status-row">
+      <div id="statusText" class="status-text">Ready — change ratio or inhale to preview.</div>
+    </div>
+  </div>
+
+<script>
+/* Breathflow Ratios - updated to show only relevant labels under circle
+   and make the active label background red.
+   Other features preserved: only first box editable, preview, per-phase beeps,
+   external audio loading for end sound, rotating arc for inhale/exhale.
+*/
+
+(() => {
+  // DOM
+  const ratioSelect = document.getElementById('ratioSelect');
+  const ratioDesc = document.getElementById('ratioDesc');
+  const phaseRow = document.getElementById('phaseRow');
+  const labelsRow = document.getElementById('labels');
+
+  const roundsInput = document.getElementById('roundsInput');
+  const sessionTimerDisplay = document.getElementById('sessionTimerDisplay');
+
+  const soundSelect = document.getElementById('soundSelect');
+  const externalUrl = document.getElementById('externalUrl');
+  const loadExternalBtn = document.getElementById('loadExternalBtn');
+  const findSoundsBtn = document.getElementById('findSoundsBtn');
+
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const stopBtn = document.getElementById('stopBtn');
+
+  const spinner = document.getElementById('spinner');
+  const phaseTimerEl = document.getElementById('phaseTimer');
+  const statusText = document.getElementById('statusText');
+
+  // State
+  let ratio = '1:1';                // selected ratio
+  let ratioParts = [1,1];          // numeric parts (counts)
+  let phaseLabels = [];            // labels e.g. ['Inhale','Exhale']
+  let phaseSeconds = [];           // seconds per phase [inhale, hold, exhale, ...]
+  let inhaleSeconds = 4;           // editable inhale seconds default
+  let rounds = 7;
+  let audioCtx = null;
+  const END_SOUND_MS = 10000;
+  let externalAudioBuffer = null;
+
+  // runtime trackers
+  let phaseIndex = 0;
+  let phaseRemaining = 0;
+  let phaseInterval = null;
+  let sessionInterval = null;
+  let sessionRemainingSeconds = 0;
+  let isPaused = false;
+
+  const ratioMap = {
+    '1:1': {parts:[1,1], labels:['Inhale','Exhale']},
+    '1:2:4': {parts:[1,2,4], labels:['Inhale','Hold','Exhale']},
+    '1:1:1': {parts:[1,1,1], labels:['Inhale','Hold','Exhale']},
+    '1:1:1:1': {parts:[1,1,1,1], labels:['Inhale','Hold','Exhale','Hold']}
+  };
+
+  // audio helpers
+  function ensureAudioCtx() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+    }
+  }
+  function unlockAudio() {
+    try {
+      ensureAudioCtx();
+      if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+      const now = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type='sine'; o.frequency.value = 880;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.06, now+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.07);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(now); o.stop(now+0.07);
+    } catch(e){ console.warn(e); }
+  }
+
+  // load external audio buffer
+  async function loadExternalAudioFromURL(url) {
+    try {
+      ensureAudioCtx();
+      statusText.textContent = 'Loading external sound...';
+      const resp = await fetch(url, {mode:'cors'});
+      if (!resp.ok) throw new Error('Network error ' + resp.status);
+      const ab = await resp.arrayBuffer();
+      const decoded = await audioCtx.decodeAudioData(ab);
+      externalAudioBuffer = decoded;
+      statusText.textContent = 'External sound loaded.';
+      soundSelect.value = 'external';
+    } catch (err) {
+      console.warn('load failed', err);
+      externalAudioBuffer = null;
+      statusText.textContent = 'Failed to load external sound (CORS or invalid URL).';
+      alert('Failed to load external audio. The URL must be a direct audio file link (mp3/wav) and allow CORS.');
+    }
+  }
+
+  loadExternalBtn.addEventListener('click', () => {
+    const url = externalUrl.value.trim();
+    if (!url) { alert('Paste a direct audio file URL (mp3/wav) then click Load.'); return; }
+    loadExternalAudioFromURL(url);
+  });
+
+  findSoundsBtn.addEventListener('click', () => {
+    window.open('https://freesound.org', '_blank');
+    window.open('https://www.zapsplat.com', '_blank');
+    window.open('https://pixabay.com/sound-effects/', '_blank');
+    statusText.textContent = 'Opened free-sound sites in new tabs.';
+  });
+
+  // Build the phase boxes and labels dynamically (only first box editable)
+  function buildPhaseBoxes() {
+    phaseRow.innerHTML = '';
+    labelsRow.innerHTML = '';
+    phaseSeconds = [];
+
+    // compute seconds per part based on inhaleSeconds and ratioParts
+    for (let i=0;i<ratioParts.length;i++) {
+      const seconds = Math.round(inhaleSeconds * (ratioParts[i] / ratioParts[0]));
+      phaseSeconds.push(seconds);
+    }
+
+    // create boxes
+    for (let i=0;i<phaseLabels.length;i++) {
+      const name = phaseLabels[i];
+      const id = 'phaseBox' + i;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'phase-box';
+      const lbl = document.createElement('label');
+      lbl.htmlFor = id;
+      lbl.innerText = name + (i===0 ? ' — editable' : ' — fixed');
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.id = id;
+      input.min = 1;
+      input.value = String(phaseSeconds[i]);
+      if (i !== 0) {
+        input.readOnly = true;
+      } else {
+        input.addEventListener('input', () => {
+          const v = parseInt(input.value,10) || 1;
+          inhaleSeconds = Math.max(1, v);
+          // update all phaseSeconds and inputs
+          for (let j=0;j<ratioParts.length;j++) {
+            const sec = Math.round(inhaleSeconds * (ratioParts[j] / ratioParts[0]));
+            phaseSeconds[j] = sec;
+            const el = document.getElementById('phaseBox' + j);
+            if (el) el.value = sec;
+          }
+          updateDescription();
+          updateSessionPreview();
+          // update center timer if not running
+          phaseTimerEl.textContent = String(phaseSeconds[0]);
+        });
+        input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') startSession(); });
+      }
+      wrapper.appendChild(lbl);
+      wrapper.appendChild(input);
+      phaseRow.appendChild(wrapper);
+
+      // label under circle
+      const lab = document.createElement('div');
+      lab.className = 'label';
+      lab.id = 'label' + i;
+      lab.innerText = name;
+      labelsRow.appendChild(lab);
+    }
+
+    // set center text to inhale by default
+    phaseTimerEl.textContent = String(phaseSeconds[0] || inhaleSeconds);
+  }
+
+  // set ratio (parts and labels) and rebuild UI
+  function setRatio(r) {
+    ratio = r;
+    const mapping = ratioMap[ratio];
+    ratioParts = mapping.parts.slice();
+    phaseLabels = mapping.labels.slice();
+    buildPhaseBoxes();
+    updateDescription();
+    updateSessionPreview();
+  }
+
+  // update the description to show computed seconds e.g. "Inhale 4s • Hold 8s • Exhale 16s"
+  function updateDescription() {
+    const parts = [];
+    for (let i=0;i<phaseLabels.length;i++) {
+      parts.push(`${phaseLabels[i]} ${phaseSeconds[i] || 0}s`);
+    }
+    ratioDesc.textContent = parts.join(' • ');
+  }
+
+  function updateSessionPreview() {
+    rounds = Math.max(1, parseInt(roundsInput.value,10) || 1);
+    const cycle = phaseSeconds.reduce((a,b)=>a+b,0);
+    const total = rounds * cycle;
+    sessionTimerDisplay.textContent = 'Session remaining: ' + formatMMSS(total);
+    statusText.textContent = `Preview — ${rounds} round(s) · ${cycle}s per round`;
+  }
+
+  function formatMMSS(totalSec) {
+    const s = Math.max(0, Math.floor(totalSec));
+    const m = Math.floor(s/60);
+    const sec = s % 60;
+    return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  }
+
+  // Set spinner color for current phase index
+  function setSpinnerColorForPhase(idx) {
+    const lab = (phaseLabels[idx] || '').toLowerCase();
+    let color = 'var(--arc-inhale)';
+    if (lab.includes('inhale')) color = 'var(--arc-inhale)';
+    else if (lab.includes('hold')) color = 'var(--arc-hold)';
+    else if (lab.includes('exhale')) color = 'var(--arc-exhale)';
+    spinner.style.background = `conic-gradient(${color} 0deg 22.5deg, #111 22.5deg 360deg)`;
+  }
+
+  // per-phase beep
+  function playPhaseBeep(name) {
+    try {
+      ensureAudioCtx();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const n = name.toLowerCase();
+      if (n.includes('inhale')) { osc.type='sine'; osc.frequency.value = 660; }
+      else if (n.includes('hold')) { osc.type='triangle'; osc.frequency.value = 980; }
+      else if (n.includes('exhale')) { osc.type='sine'; osc.frequency.value = 440; }
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(now); osc.stop(now + 0.18);
+    } catch(e){ console.warn(e); }
+  }
+
+  // phase start by index
+  function startPhaseByIndex(idx) {
+    if (idx < 0 || idx >= phaseSeconds.length) return;
+    phaseIndex = idx;
+    phaseRemaining = phaseSeconds[idx];
+    phaseTimerEl.textContent = String(phaseRemaining);
+    // highlight label under circle
+    for (let i=0;i<phaseLabels.length;i++) {
+      const lab = document.getElementById('label' + i);
+      if (lab) lab.classList.toggle('active', i === idx);
+    }
+    setSpinnerColorForPhase(idx);
+    const name = phaseLabels[idx] || '';
+    // play beep
+    try { playPhaseBeep(name); } catch(e){ console.warn(e); }
+    // spinner rotates only for inhale/exhale
+    if (name.toLowerCase().includes('inhale') || name.toLowerCase().includes('exhale')) {
+      spinner.style.animation = `spinOnce ${Math.max(0.1, phaseRemaining)}s linear forwards`;
+    } else {
+      spinner.style.animation = 'none';
+    }
+  }
+
+  function phaseTick() {
+    if (isPaused) return;
+    phaseTimerEl.textContent = String(phaseRemaining);
+    phaseRemaining--;
+    if (phaseRemaining < 0) {
+      const next = (phaseIndex + 1) % phaseSeconds.length;
+      startPhaseByIndex(next);
+    }
+  }
+
+  function sessionTick() {
+    if (isPaused) return;
+    sessionTimerDisplay.textContent = 'Session remaining: ' + formatMMSS(sessionRemainingSeconds);
+    sessionRemainingSeconds--;
+    if (sessionRemainingSeconds < 0) endSession();
+  }
+
+  // Builtins for end sound
+  function playBuiltinHarp(){ ensureAudioCtx(); const ctx=audioCtx, now=ctx.currentTime; const duration=Math.min(4,END_SOUND_MS/1000); const master=ctx.createGain(); master.gain.setValueAtTime(0.0001,now); master.gain.exponentialRampToValueAtTime(0.6,now+0.02); master.gain.exponentialRampToValueAtTime(0.0001,now+duration); master.connect(ctx.destination); [440,550,660,880].forEach((f,i)=>{ const t=now+i*0.18; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f; const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.6,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+1.6); o.connect(g); g.connect(master); o.start(t); o.stop(t + Math.min(1.6,duration)); }); }
+  function playBuiltinChimes(){ ensureAudioCtx(); const ctx=audioCtx, now=ctx.currentTime; const duration=Math.min(4.5,END_SOUND_MS/1000); const master=ctx.createGain(); master.gain.setValueAtTime(0.0001,now); master.gain.exponentialRampToValueAtTime(0.75,now+0.02); master.gain.exponentialRampToValueAtTime(0.0001,now+duration); master.connect(ctx.destination); [660,880,990,1320].forEach((f,i)=>{ const t=now+i*0.25; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f; const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.8,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+Math.min(3.2,duration)); o.connect(g); g.connect(master); o.start(t); o.stop(t+Math.min(3.2,duration)); }); }
+  function playBuiltinBowl(){ ensureAudioCtx(); const ctx=audioCtx, now=ctx.currentTime; const duration=Math.min(4.8,END_SOUND_MS/1000); const master=ctx.createGain(); master.gain.setValueAtTime(0.0001,now); master.gain.exponentialRampToValueAtTime(0.85,now+0.02); master.gain.exponentialRampToValueAtTime(0.0001,now+duration); master.connect(ctx.destination); const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=220; const g=ctx.createGain(); g.gain.setValueAtTime(0.8,now); o.connect(g); g.connect(master); o.start(now); o.stop(now+duration); }
+  function playBuiltinBell(){ ensureAudioCtx(); const ctx=audioCtx, now=ctx.currentTime; const duration=Math.min(3.8,END_SOUND_MS/1000); const master=ctx.createGain(); master.gain.setValueAtTime(0.0001,now); master.gain.exponentialRampToValueAtTime(0.8,now+0.02); master.gain.exponentialRampToValueAtTime(0.0001,now+duration); master.connect(ctx.destination); [880,1320,1760].forEach((f,i)=>{ const t=now+i*0.05; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f; const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.6/(i+1),t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+duration); o.connect(g); g.connect(master); o.start(t); o.stop(t+duration); }); }
+  function playBuiltinOcean(){ ensureAudioCtx(); const ctx=audioCtx, now=ctx.currentTime; const duration=Math.min(4.8,END_SOUND_MS/1000); const master=ctx.createGain(); master.gain.setValueAtTime(0.0001,now); master.gain.exponentialRampToValueAtTime(0.85,now+0.04); master.gain.exponentialRampToValueAtTime(0.0001,now+duration); master.connect(ctx.destination); const buf=ctx.createBuffer(1, ctx.sampleRate*1.2, ctx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.2)); const s=ctx.createBufferSource(); s.buffer=buf; s.loop=false; const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1200; s.connect(lp); lp.connect(master); s.start(now); s.stop(now+duration); }
+
+  function playExternalBuffer() {
+    try {
+      if (!externalAudioBuffer) return;
+      ensureAudioCtx();
+      const ctx = audioCtx; const now = ctx.currentTime;
+      const src = ctx.createBufferSource(); src.buffer = externalAudioBuffer;
+      const g = ctx.createGain(); g.gain.setValueAtTime(1.0, now);
+      src.connect(g); g.connect(ctx.destination);
+      src.start(now); src.stop(now + END_SOUND_MS / 1000);
+    } catch(e){ console.warn(e); }
+  }
+
+  function playSelectedEndSound() {
+    try {
+      if (soundSelect.value === 'external' && externalAudioBuffer) { playExternalBuffer(); return; }
+      const sel = soundSelect.value;
+      if (sel === 'builtin_harp') playBuiltinHarp();
+      else if (sel === 'builtin_chimes') playBuiltinChimes();
+      else if (sel === 'builtin_bowl') playBuiltinBowl();
+      else if (sel === 'builtin_bell') playBuiltinBell();
+      else if (sel === 'builtin_ocean') playBuiltinOcean();
+      else playBuiltinHarp();
+    } catch(e){ console.warn('end sound error', e); }
+  }
+
+  // Start session
+  function startSession() {
+    ensureAudioCtx();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+    unlockAudio();
+
+    // recompute and rebuild boxes (to capture latest inhale)
+    buildPhaseBoxes();
+
+    rounds = Math.max(1, parseInt(roundsInput.value,10) || 1);
+    const cycle = phaseSeconds.reduce((a,b)=>a+b,0);
+    sessionRemainingSeconds = rounds * cycle;
+    sessionTimerDisplay.textContent = 'Session remaining: ' + formatMMSS(sessionRemainingSeconds);
+
+    // start at first phase
+    startPhaseByIndex(0);
+
+    clearInterval(phaseInterval); clearInterval(sessionInterval);
+    isPaused = false;
+    phaseInterval = setInterval(phaseTick, 1000);
+    sessionInterval = setInterval(sessionTick, 1000);
+
+    startBtn.disabled = true; pauseBtn.disabled = false; stopBtn.disabled = false;
+    statusText.textContent = `Running — ${rounds} round(s) · ${cycle}s per round`;
+  }
+
+  // Pause / resume
+  function togglePause() {
+    if (!phaseInterval || !sessionInterval) return;
+    if (!isPaused) {
+      isPaused = true;
+      pauseBtn.textContent = 'Resume';
+      const cs = window.getComputedStyle(spinner);
+      const mat = cs.transform || cs.webkitTransform;
+      if (mat && mat !== 'none') spinner.style.transform = mat;
+      spinner.style.animationPlayState = 'paused';
+      statusText.textContent = 'Paused';
+    } else {
+      isPaused = false;
+      pauseBtn.textContent = 'Pause';
+      const lab = (phaseLabels[phaseIndex] || '').toLowerCase();
+      if (lab.includes('inhale') || lab.includes('exhale')) {
+        spinner.style.animation = `spinOnce ${Math.max(0.1, phaseRemaining)}s linear forwards`;
+      } else spinner.style.animation = 'none';
+      statusText.textContent = `Running — ${rounds} round(s)`;
+    }
+  }
+
+  // Stop
+  function stopSession() {
+    clearInterval(phaseInterval); phaseInterval = null;
+    clearInterval(sessionInterval); sessionInterval = null;
+    phaseIndex = 0; phaseRemaining = 0; sessionRemainingSeconds = 0; isPaused = false;
+    spinner.style.animation = 'none'; spinner.style.transform = 'rotate(0deg)';
+    phaseTimerEl.textContent = '0';
+    for (let i=0;i<phaseLabels.length;i++){ const lab = document.getElementById('label' + i); if (lab) lab.classList.remove('active'); }
+    sessionTimerDisplay.textContent = 'Session remaining: 00:00';
+    statusText.textContent = 'Stopped';
+    startBtn.disabled = false; pauseBtn.disabled = true; stopBtn.disabled = true; pauseBtn.textContent = 'Pause';
+  }
+
+  // End
+  function endSession() {
+    clearInterval(phaseInterval); phaseInterval = null;
+    clearInterval(sessionInterval); sessionInterval = null;
+    phaseIndex = 0; phaseRemaining = 0;
+    phaseTimerEl.textContent = '🌸';
+    spinner.style.animation = 'none';
+    sessionTimerDisplay.textContent = 'Session remaining: 00:00';
+    for (let i=0;i<phaseLabels.length;i++){ const lab = document.getElementById('label' + i); if (lab) lab.classList.remove('active'); }
+    statusText.textContent = 'Session complete — well done.';
+    startBtn.disabled = false; pauseBtn.disabled = true; stopBtn.disabled = true; pauseBtn.textContent = 'Pause'; isPaused = false;
+    try { playSelectedEndSound(); } catch(e){ console.warn(e); }
+  }
+
+  // Initialization: default ratio 1:1, inhale 4s
+  inhaleSeconds = 4;
+  roundsInput.value = 7;
+  function setRatio(r) {
+    const mapping = ratioMap[r];
+    if (!mapping) return;
+    ratio = r;
+    ratioParts = mapping.parts.slice();
+    phaseLabels = mapping.labels.slice();
+    buildPhaseBoxes();
+    updateDescription();
+    updateSessionPreview();
+  }
+  setRatio('1:1');
+
+  // event wiring
+  ratioSelect.addEventListener('change', (e) => { setRatio(e.target.value); });
+  roundsInput.addEventListener('input', updateSessionPreview);
+  soundSelect.addEventListener('change', () => { if (soundSelect.value !== 'external') externalAudioBuffer = null; });
+
+  startBtn.addEventListener('click', startSession);
+  pauseBtn.addEventListener('click', togglePause);
+  stopBtn.addEventListener('click', stopSession);
+
+  roundsInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') startSession(); });
+
+})();
+</script>
+</body>
+</html>
