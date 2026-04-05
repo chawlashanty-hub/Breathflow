@@ -37,36 +37,19 @@
     font-size: 11px; font-weight: 600; text-transform: uppercase;
     letter-spacing: .08em; color: var(--muted); margin-bottom: 9px;
   }
-
-  /* ── 4 ratio cards ── */
   .ratio-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 20px;
   }
   @media(max-width:620px){ .ratio-grid { grid-template-columns: repeat(2,1fr); } }
   .rcard {
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 12px 10px;
-    cursor: pointer;
-    background: var(--card-inner);
-    transition: border-color .18s, box-shadow .18s, opacity .18s;
-    user-select: none;
-    position: relative;
+    border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 12px 12px 10px; cursor: pointer; background: var(--card-inner);
+    transition: border-color .18s, box-shadow .18s; user-select: none; position: relative;
   }
   .rcard:hover:not(.in-queue) { border-color: var(--accent); }
-  .rcard.in-queue {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(76,175,128,0.18);
-    cursor: not-allowed;
-  }
-  .rcard .rlabel {
-    font-family: 'DM Mono', monospace;
-    font-size: 15px; font-weight: 500; color: var(--accent-2); margin-bottom: 3px;
-  }
-  .rcard .rname  { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .rcard.in-queue { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(76,175,128,0.18); cursor: not-allowed; }
+  .rcard .rlabel { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--accent-2); margin-bottom: 3px; }
   .rcard .rdesc  { font-size: 11px; color: var(--muted); line-height: 1.45; margin-bottom: 8px; }
   .rcard .rpills { display: flex; gap: 4px; flex-wrap: wrap; }
   .pill { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
@@ -74,172 +57,125 @@
   .ph { background: rgba(229,57,53,.12);  color: #b71c1c; }
   .pe { background: rgba(74,144,226,.15); color: #1a5fa0; }
   .queue-badge {
-    position: absolute; top: 7px; right: 7px;
-    width: 20px; height: 20px; border-radius: 50%;
-    background: var(--accent); color: #fff;
-    font-size: 11px; font-weight: 700;
+    position: absolute; top: 7px; right: 7px; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: 11px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
   }
-
-  /* ── Controls ── */
-  .controls-row {
-    display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap;
-    margin-bottom: 18px;
-  }
+  .controls-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
   .ctrl { display: flex; flex-direction: column; gap: 5px; }
   .ctrl label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   .ctrl input[type=number] {
-    width: 100px; padding: 9px 12px;
-    border-radius: 10px; border: 1.5px solid var(--border);
-    background: #fff; font-size: 16px;
-    font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text);
+    width: 100px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: #fff; font-size: 16px; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text);
     outline: none; transition: border-color .15s;
   }
   .ctrl input[type=number]:focus { border-color: var(--accent); }
-
-  /* ── Queue section ── */
   .queue-section { margin-bottom: 18px; }
   .queue-col { display: flex; flex-direction: column; gap: 8px; }
   .q-empty { font-size: 13px; color: var(--muted); font-style: italic; }
-
-  /* ── Queue item (expanded pill) ── */
   .q-item {
-    display: flex; align-items: center; gap: 0;
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    background: #fff;
-    overflow: hidden;
-    transition: border-color .15s;
+    display: flex; align-items: center; border: 1.5px solid var(--border);
+    border-radius: 14px; background: #fff; overflow: hidden; transition: border-color .15s;
   }
   .q-item:hover { border-color: #e57373; }
   .q-item:hover .q-remove { background: #fdecea; color: #e53935; }
-
   .q-num-block {
     display: flex; align-items: center; justify-content: center;
-    width: 30px; min-width: 30px; height: 100%;
-    background: var(--card-inner);
-    border-right: 1.5px solid var(--border);
-    font-size: 12px; font-weight: 700; color: var(--accent-2);
-    font-family: 'DM Mono', monospace;
-    align-self: stretch;
+    width: 30px; min-width: 30px; align-self: stretch;
+    background: var(--card-inner); border-right: 1.5px solid var(--border);
+    font-size: 12px; font-weight: 700; color: var(--accent-2); font-family: 'DM Mono', monospace;
   }
-
-  .q-body {
-    flex: 1; display: flex; align-items: center; flex-wrap: wrap;
-    gap: 6px; padding: 8px 10px;
-  }
-
-  .q-ratio-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px; font-weight: 500; color: var(--accent-2);
-    margin-right: 2px;
-  }
-  .q-name {
-    font-size: 12px; font-weight: 600; color: var(--text);
-    margin-right: 6px;
-  }
-
+  .q-body { flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
+  .q-ratio-label { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--accent-2); margin-right: 2px; }
   .q-phases { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-  .qphase-chip {
-    display: inline-flex; align-items: center;
-    padding: 3px 10px; border-radius: 99px;
-    font-size: 12px; font-weight: 600;
-  }
+  .qphase-chip { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; }
   .qchip-i { background: rgba(38,166,154,.14); color: #1a7a72; }
   .qchip-h { background: rgba(229,57,53,.12);  color: #b71c1c; }
   .qchip-e { background: rgba(74,144,226,.14); color: #1555a0; }
   .qchip-sep { font-size: 12px; color: var(--muted); }
-
-  .q-time {
-    margin-left: auto;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px; font-weight: 500; color: var(--muted);
-    white-space: nowrap;
-    padding-right: 4px;
-  }
-
+  .q-time { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; padding-right: 4px; }
   .q-remove {
     display: flex; align-items: center; justify-content: center;
     width: 32px; min-width: 32px; align-self: stretch;
-    border-left: 1.5px solid var(--border);
-    color: #c0c0c0; font-size: 16px; cursor: pointer;
-    background: transparent; transition: background .15s, color .15s;
-    user-select: none;
+    border-left: 1.5px solid var(--border); color: #c0c0c0; font-size: 16px; cursor: pointer;
+    background: transparent; transition: background .15s, color .15s; user-select: none;
   }
-
   .q-total-row {
     display: flex; align-items: center; justify-content: flex-end;
-    padding: 6px 10px 2px;
-    font-size: 13px; font-weight: 600;
+    padding: 6px 10px 2px; font-size: 13px; font-weight: 600;
     font-family: 'DM Mono', monospace; color: var(--accent-2);
-    border-top: 1px dashed var(--border);
-    margin-top: 2px;
+    border-top: 1px dashed var(--border); margin-top: 2px;
   }
   .q-total-label { font-size: 11px; font-weight: 400; color: var(--muted); margin-right: 6px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .06em; }
-
-  /* ── Sound row ── */
   .sound-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
-  .sound-row select {
-    padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border);
-    background: #fff; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none;
-  }
-  .sound-row input[type=text] {
-    padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border);
-    background: #fff; font-size: 12px; width: 210px; outline: none;
-    font-family: 'DM Mono', monospace; color: var(--text);
-  }
-  .btn-sm {
-    padding: 9px 14px; border-radius: 10px; border: 1.5px solid var(--border);
-    background: var(--card-inner); cursor: pointer; font-size: 13px;
-    font-family: 'DM Sans', sans-serif; color: var(--text); transition: background .15s;
-  }
+  .sound-row select { padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; }
+  .sound-row input[type=text] { padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; width: 210px; outline: none; font-family: 'DM Mono', monospace; color: var(--text); }
+  .btn-sm { padding: 9px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card-inner); cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); transition: background .15s; }
   .btn-sm:hover { background: #e0f0e8; }
-
-  /* ── Main buttons ── */
   .buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 22px; }
-  .btn-main {
-    padding: 11px 30px; border-radius: 12px; border: none;
-    font-size: 15px; font-weight: 600; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; transition: opacity .15s, transform .1s;
-  }
+  .btn-main { padding: 11px 30px; border-radius: 12px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity .15s, transform .1s; }
   .btn-main:hover:not(:disabled) { opacity: .85; transform: translateY(-1px); }
   .btn-main:disabled { opacity: .38; cursor: not-allowed; }
   .btn-start { background: var(--accent); color: #fff; }
   .btn-pause { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
   .btn-stop  { background: #fdecea; color: #c62828; border: 1.5px solid rgba(198,40,40,.18); }
 
-  /* ── Circle ── */
+  /* ── Loader / Circle ── */
   .loader-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .loader { position: relative; width: 210px; height: 210px; display: flex; align-items: center; justify-content: center; }
-  .arc-svg { position: absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); }
+
+  /* Active arc — hidden by default */
+  .arc-svg {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    transform: rotate(-90deg);
+    opacity: 0; transition: opacity .5s ease;
+  }
+  .arc-svg.vis { opacity: 1; }
   .arc-track    { fill: none; stroke: rgba(0,0,0,.07); stroke-width: 11; }
-  .arc-progress {
-    fill: none; stroke-width: 11; stroke-linecap: round;
-    stroke-dasharray: 565; stroke-dashoffset: 565;
-    transition: stroke .35s ease;
-  }
+  .arc-progress { fill: none; stroke-width: 11; stroke-linecap: round; stroke-dasharray: 565; stroke-dashoffset: 565; transition: stroke .35s ease; }
+
+  /* Active countdown number */
   .phase-center {
-    position: relative; z-index: 2;
-    font-size: 50px; font-weight: 600;
-    font-family: 'DM Mono', monospace; color: var(--text); user-select: none;
+    position: absolute; z-index: 4;
+    font-size: 50px; font-weight: 600; font-family: 'DM Mono', monospace;
+    color: var(--text); user-select: none;
+    opacity: 0; transition: opacity .5s ease;
   }
+  .phase-center.vis { opacity: 1; }
+
+  /* ── Watch idle face ── */
+  .watch-idle {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 1; transition: opacity .5s ease; pointer-events: none;
+  }
+  .watch-idle.hidden { opacity: 0; }
+  .watch-bezel { position: absolute; top:0; left:0; width:100%; height:100%; }
+  .watch-content {
+    position: relative; z-index: 3;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .watch-time {
+    font-family: 'DM Mono', monospace; font-size: 33px; font-weight: 500;
+    color: var(--text); letter-spacing: 3px; line-height: 1; margin-bottom: 3px;
+  }
+  .watch-ampm { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+  .watch-date { font-size: 9px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .watch-divider { width: 20px; height: 1px; background: var(--accent); opacity: .45; margin: 0 auto 8px; }
+  .watch-quote { font-size: 9.5px; font-weight: 300; color: var(--accent-2); letter-spacing: .04em; line-height: 1.65; font-style: italic; max-width: 100px; }
+
   .phase-labels { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-  .plabel {
-    padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600;
-    color: var(--muted); background: rgba(0,0,0,.04); transition: all .2s;
-    min-width: 72px; text-align: center;
-  }
+  .plabel { padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; color: var(--muted); background: rgba(0,0,0,.04); transition: all .2s; min-width: 72px; text-align: center; }
   .plabel.ai { background: rgba(38,166,154,.18); color: #0e6b65; }
   .plabel.ah { background: rgba(229,57,53,.15);  color: #b71c1c; }
   .plabel.ae { background: rgba(74,144,226,.18); color: #1555a0; }
-
-  /* ── Status ── */
   .status-bar { margin-top: 12px; text-align: center; font-size: 13px; color: var(--muted); }
   .round-ind  { text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 3px; }
 
   @media(max-width:500px){
     .loader { width: 170px; height: 170px; }
     .phase-center { font-size: 38px; }
+    .watch-time { font-size: 26px; }
   }
 </style>
 </head>
@@ -301,11 +237,31 @@
 
   <div class="loader-wrap">
     <div class="loader">
-      <svg class="arc-svg" viewBox="0 0 200 200">
+
+      <!-- Active arc -->
+      <svg class="arc-svg" id="arcSvg" viewBox="0 0 200 200">
         <circle class="arc-track"    cx="100" cy="100" r="90"/>
         <circle class="arc-progress" cx="100" cy="100" r="90" id="arcEl"/>
       </svg>
-      <div class="phase-center" id="phaseNum">–</div>
+
+      <!-- Active countdown number -->
+      <div class="phase-center" id="phaseNum"></div>
+
+      <!-- Idle watch face -->
+      <div class="watch-idle" id="watchIdle">
+        <svg class="watch-bezel" id="watchBezelSvg" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="105" cy="105" r="101" fill="none" stroke="rgba(46,139,94,0.13)" stroke-width="1.5"/>
+          <circle cx="105" cy="105" r="91"  fill="none" stroke="rgba(46,139,94,0.07)" stroke-width="1"/>
+        </svg>
+        <div class="watch-content">
+          <div class="watch-time" id="watchTime">--:--</div>
+          <div class="watch-ampm" id="watchAmpm">AM</div>
+          <div class="watch-date" id="watchDate">--- -- ----</div>
+          <div class="watch-divider"></div>
+          <div class="watch-quote">Breathe better.<br>Live better.</div>
+        </div>
+      </div>
+
     </div>
     <div class="phase-labels" id="labelsRow"></div>
     <div class="round-ind"    id="roundInd"></div>
@@ -316,393 +272,278 @@
 <script>
 (() => {
   const RATIOS = [
-    { id:'1:1',     label:'1 : 1',     name:'Equal Breathing',
-      desc:'Same duration in & out. Calming and balancing.',
-      parts:[1,1],     phases:['Inhale','Exhale'] },
-    { id:'1:2:4',   label:'1 : 2 : 4', name:'4-7-8 Style',
-      desc:'Short in, double hold, long exhale. Deep relaxation.',
-      parts:[1,2,4],   phases:['Inhale','Hold','Exhale'] },
-    { id:'1:1:1',   label:'1 : 1 : 1', name:'Box Lite',
-      desc:'Equal in, hold, out. Great for focus.',
-      parts:[1,1,1],   phases:['Inhale','Hold','Exhale'] },
-    { id:'1:1:1:1', label:'1:1:1:1',   name:'Box Breathing',
-      desc:'Equal in, hold, out, hold. Calm under pressure.',
-      parts:[1,1,1,1], phases:['Inhale','Hold','Exhale','Hold'] },
+    { id:'1:1',     label:'1 : 1',     name:'Equal Breathing',  desc:'Same duration in & out. Calming and balancing.',          parts:[1,1],     phases:['Inhale','Exhale'] },
+    { id:'1:2:4',   label:'1 : 2 : 4', name:'4-7-8 Style',      desc:'Short in, double hold, long exhale. Deep relaxation.',    parts:[1,2,4],   phases:['Inhale','Hold','Exhale'] },
+    { id:'1:1:1',   label:'1 : 1 : 1', name:'Box Lite',          desc:'Equal in, hold, out. Great for focus.',                   parts:[1,1,1],   phases:['Inhale','Hold','Exhale'] },
+    { id:'1:1:1:1', label:'1:1:1:1',   name:'Box Breathing',     desc:'Equal in, hold, out, hold. Calm under pressure.',         parts:[1,1,1,1], phases:['Inhale','Hold','Exhale','Hold'] },
   ];
 
-  const ratioGrid  = document.getElementById('ratioGrid');
-  const inhaleInp  = document.getElementById('inhaleInput');
-  const roundsInp  = document.getElementById('roundsInput');
-  const queueCol   = document.getElementById('queueCol');
-  const qEmpty     = document.getElementById('qEmpty');
-  const totalRow   = document.getElementById('totalRow');
-  const totalTime  = document.getElementById('totalTime');
-  const soundSel   = document.getElementById('soundSelect');
-  const extUrlInp  = document.getElementById('externalUrl');
-  const loadBtn    = document.getElementById('loadBtn');
-  const findBtn    = document.getElementById('findBtn');
-  const startBtn   = document.getElementById('startBtn');
-  const pauseBtn   = document.getElementById('pauseBtn');
-  const stopBtn    = document.getElementById('stopBtn');
-  const arcEl      = document.getElementById('arcEl');
-  const phaseNum   = document.getElementById('phaseNum');
-  const labelsRow  = document.getElementById('labelsRow');
-  const roundInd   = document.getElementById('roundInd');
-  const statusEl   = document.getElementById('statusEl');
+  const $ = id => document.getElementById(id);
+  const ratioGrid   = $('ratioGrid');
+  const inhaleInp   = $('inhaleInput');
+  const roundsInp   = $('roundsInput');
+  const queueCol    = $('queueCol');
+  const qEmpty      = $('qEmpty');
+  const totalRow    = $('totalRow');
+  const totalTime   = $('totalTime');
+  const soundSel    = $('soundSelect');
+  const extUrlInp   = $('externalUrl');
+  const loadBtn     = $('loadBtn');
+  const findBtn     = $('findBtn');
+  const startBtn    = $('startBtn');
+  const pauseBtn    = $('pauseBtn');
+  const stopBtn     = $('stopBtn');
+  const arcSvg      = $('arcSvg');
+  const arcEl       = $('arcEl');
+  const phaseNum    = $('phaseNum');
+  const labelsRow   = $('labelsRow');
+  const roundInd    = $('roundInd');
+  const statusEl    = $('statusEl');
+  const watchIdle   = $('watchIdle');
+  const watchTimeEl = $('watchTime');
+  const watchAmpmEl = $('watchAmpm');
+  const watchDateEl = $('watchDate');
 
   const CIRC = 2 * Math.PI * 90;
+  let queue=[], audioCtx=null, extBuffer=null;
+  let sessionList=[], qIdx=0, phaseIdx=0, phaseRem=0;
+  let sesRem=0, ticker=null, isPaused=false;
+  let arcStart=0, arcDur=0, arcFrame=null, arcOn=false;
+  let totalRounds=0, doneRounds=0, clockTick=null;
 
-  let queue = [];
-  let audioCtx  = null;
-  let extBuffer = null;
+  /* ── Watch clock ── */
+  const DAYS  =['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function updateClock(){
+    const d=new Date(); let h=d.getHours(),m=d.getMinutes();
+    const ap=h>=12?'PM':'AM'; h=h%12||12;
+    watchTimeEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    watchAmpmEl.textContent=ap;
+    watchDateEl.textContent=DAYS[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+' '+MONTHS[d.getMonth()];
+  }
 
-  let sessionList = [];
-  let qIdx = 0, phaseIdx = 0, phaseRem = 0;
-  let sesRem = 0, ticker = null, isPaused = false;
-  let arcStart = 0, arcDur = 0, arcFrame = null, arcOn = false;
-  let totalRounds = 0, doneRounds = 0;
+  function drawTicks(){
+    const svg=$('watchBezelSvg'); const cx=105,cy=105,r1=97;
+    for(let i=0;i<60;i++){
+      const a=(i/60)*2*Math.PI-Math.PI/2, isH=i%5===0;
+      const r2=isH?88:91;
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',cx+r1*Math.cos(a)); line.setAttribute('y1',cy+r1*Math.sin(a));
+      line.setAttribute('x2',cx+r2*Math.cos(a)); line.setAttribute('y2',cy+r2*Math.sin(a));
+      line.setAttribute('stroke',isH?'rgba(46,139,94,0.5)':'rgba(60,100,60,0.2)');
+      line.setAttribute('stroke-width',isH?'2':'1');
+      line.setAttribute('stroke-linecap','round');
+      svg.appendChild(line);
+    }
+  }
 
-  const getInhale = () => Math.max(1, parseInt(inhaleInp.value) || 4);
-  const getRounds = () => Math.max(1, parseInt(roundsInp.value) || 2);
-  const fmtMMSS = s => {
-    s = Math.max(0, Math.floor(s));
-    return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
-  };
-  const phaseSecs = (ratio, inh) =>
-    ratio.parts.map(p => Math.round(inh * p / ratio.parts[0]));
+  function showIdle(){
+    watchIdle.classList.remove('hidden');
+    arcSvg.classList.remove('vis');
+    phaseNum.classList.remove('vis');
+    phaseNum.textContent='';
+    updateClock();
+    if(clockTick) clearInterval(clockTick);
+    clockTick=setInterval(updateClock,10000);
+  }
+  function hideIdle(){
+    watchIdle.classList.add('hidden');
+    arcSvg.classList.add('vis');
+    phaseNum.classList.add('vis');
+    if(clockTick){clearInterval(clockTick);clockTick=null;}
+  }
 
-  function buildCards() {
-    ratioGrid.innerHTML = '';
-    RATIOS.forEach(r => {
-      const c = document.createElement('div');
-      c.className = 'rcard'; c.dataset.id = r.id;
-      c.innerHTML = `
-        <div class="rlabel">${r.label}</div>
-        <div class="rdesc">${r.desc}</div>
-        <div class="rpills">${r.phases.map(p=>`<span class="pill ${p==='Inhale'?'pi':p==='Hold'?'ph':'pe'}">${p}</span>`).join('')}</div>
-      `;
-      c.addEventListener('click', () => addToQueue(r.id));
+  /* ── Helpers ── */
+  const getInhale=()=>Math.max(1,parseInt(inhaleInp.value)||4);
+  const getRounds=()=>Math.max(1,parseInt(roundsInp.value)||2);
+  const fmtMMSS=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+  const phaseSecs=(r,inh)=>r.parts.map(p=>Math.round(inh*p/r.parts[0]));
+
+  /* ── Cards ── */
+  function buildCards(){
+    ratioGrid.innerHTML='';
+    RATIOS.forEach(r=>{
+      const c=document.createElement('div');
+      c.className='rcard'; c.dataset.id=r.id;
+      c.innerHTML=`<div class="rlabel">${r.label}</div><div class="rdesc">${r.desc}</div><div class="rpills">${r.phases.map(p=>`<span class="pill ${p==='Inhale'?'pi':p==='Hold'?'ph':'pe'}">${p}</span>`).join('')}</div>`;
+      c.addEventListener('click',()=>addToQueue(r.id));
       ratioGrid.appendChild(c);
     });
   }
 
-  function refreshCardStyles() {
-    RATIOS.forEach(r => {
-      const el = ratioGrid.querySelector(`[data-id="${r.id}"]`);
-      if (!el) return;
-      el.querySelectorAll('.queue-badge').forEach(b => b.remove());
-      const pos = queue.indexOf(r.id);
-      if (pos !== -1) {
+  function refreshCardStyles(){
+    RATIOS.forEach(r=>{
+      const el=ratioGrid.querySelector(`[data-id="${r.id}"]`); if(!el)return;
+      el.querySelectorAll('.queue-badge').forEach(b=>b.remove());
+      const pos=queue.indexOf(r.id);
+      if(pos!==-1){
         el.classList.add('in-queue');
-        const badge = document.createElement('div');
-        badge.className = 'queue-badge'; badge.textContent = pos + 1;
-        el.appendChild(badge);
-      } else {
-        el.classList.remove('in-queue');
-      }
+        const b=document.createElement('div'); b.className='queue-badge'; b.textContent=pos+1;
+        el.appendChild(b);
+      } else el.classList.remove('in-queue');
     });
   }
 
-  function addToQueue(id) {
-    if (queue.includes(id)) return;
-    if (queue.length >= 4) return;
-    queue.push(id);
-    refreshCardStyles();
-    renderQueue();
+  function addToQueue(id){
+    if(queue.includes(id)||queue.length>=4)return;
+    queue.push(id); refreshCardStyles(); renderQueue();
   }
 
-  /* ── Build expanded queue items with phase breakdown ── */
-  function renderQueue() {
-    Array.from(queueCol.querySelectorAll('.q-item')).forEach(el => el.remove());
-
-    if (!queue.length) {
-      qEmpty.style.display = '';
-      totalRow.style.display = 'none';
-      return;
-    }
-    qEmpty.style.display = 'none';
-
-    const inh = getInhale(), rounds = getRounds();
-    let grand = 0;
-
-    queue.forEach((id, idx) => {
-      const r = RATIOS.find(x => x.id === id);
-      const secs = phaseSecs(r, inh);
-      const patternSec = secs.reduce((a,b) => a+b, 0) * rounds;
-      grand += patternSec;
-
-      const item = document.createElement('div');
-      item.className = 'q-item';
-
-      /* Number block */
-      const numBlock = document.createElement('div');
-      numBlock.className = 'q-num-block';
-      numBlock.textContent = idx + 1;
-      item.appendChild(numBlock);
-
-      /* Body */
-      const body = document.createElement('div');
-      body.className = 'q-body';
-
-      /* Ratio label + name */
-      const rlbl = document.createElement('span');
-      rlbl.className = 'q-ratio-label';
-      rlbl.textContent = r.label;
-      body.appendChild(rlbl);
-
-      /* Phase chips */
-      const phasesWrap = document.createElement('div');
-      phasesWrap.className = 'q-phases';
-      r.phases.forEach((p, i) => {
-        if (i > 0) {
-          const sep = document.createElement('span');
-          sep.className = 'qchip-sep'; sep.textContent = '→';
-          phasesWrap.appendChild(sep);
-        }
-        const chip = document.createElement('span');
-        const cls = p === 'Inhale' ? 'qchip-i' : p === 'Hold' ? 'qchip-h' : 'qchip-e';
-        chip.className = 'qphase-chip ' + cls;
-        // short labels
-        const shortLabel = p === 'Inhale' ? 'in' : p === 'Hold' ? 'hold' : 'out';
-        chip.textContent = shortLabel + ' ' + secs[i] + 's';
-        phasesWrap.appendChild(chip);
+  /* ── Queue ── */
+  function renderQueue(){
+    Array.from(queueCol.querySelectorAll('.q-item')).forEach(el=>el.remove());
+    if(!queue.length){qEmpty.style.display='';totalRow.style.display='none';return;}
+    qEmpty.style.display='none';
+    const inh=getInhale(),rounds=getRounds(); let grand=0;
+    queue.forEach((id,idx)=>{
+      const r=RATIOS.find(x=>x.id===id);
+      const secs=phaseSecs(r,inh);
+      const patSec=secs.reduce((a,b)=>a+b,0)*rounds; grand+=patSec;
+      const item=document.createElement('div'); item.className='q-item';
+      const nb=document.createElement('div'); nb.className='q-num-block'; nb.textContent=idx+1;
+      item.appendChild(nb);
+      const body=document.createElement('div'); body.className='q-body';
+      const rl=document.createElement('span'); rl.className='q-ratio-label'; rl.textContent=r.label;
+      body.appendChild(rl);
+      const pw=document.createElement('div'); pw.className='q-phases';
+      r.phases.forEach((p,i)=>{
+        if(i>0){const s=document.createElement('span');s.className='qchip-sep';s.textContent='→';pw.appendChild(s);}
+        const ch=document.createElement('span');
+        ch.className='qphase-chip '+(p==='Inhale'?'qchip-i':p==='Hold'?'qchip-h':'qchip-e');
+        ch.textContent=(p==='Inhale'?'in':p==='Hold'?'hold':'out')+' '+secs[i]+'s';
+        pw.appendChild(ch);
       });
-      body.appendChild(phasesWrap);
-
-      /* Per-pattern time */
-      const timeEl = document.createElement('span');
-      timeEl.className = 'q-time';
-      timeEl.textContent = fmtMMSS(patternSec);
-      body.appendChild(timeEl);
-
+      body.appendChild(pw);
+      const te=document.createElement('span'); te.className='q-time'; te.textContent=fmtMMSS(patSec);
+      body.appendChild(te);
       item.appendChild(body);
-
-      /* Remove button */
-      const removeEl = document.createElement('div');
-      removeEl.className = 'q-remove';
-      removeEl.textContent = '×';
-      removeEl.title = 'Remove';
-      removeEl.addEventListener('click', () => {
-        queue.splice(idx, 1);
-        refreshCardStyles(); renderQueue();
-      });
-      item.appendChild(removeEl);
-
+      const rm=document.createElement('div'); rm.className='q-remove'; rm.textContent='×'; rm.title='Remove';
+      rm.addEventListener('click',()=>{queue.splice(idx,1);refreshCardStyles();renderQueue();});
+      item.appendChild(rm);
       queueCol.appendChild(item);
     });
-
-    /* Grand total */
-    totalTime.textContent = fmtMMSS(grand);
-    totalRow.style.display = 'flex';
+    totalTime.textContent=fmtMMSS(grand); totalRow.style.display='flex';
   }
 
   /* ── Audio ── */
-  function ensureCtx() {
-    if (!audioCtx) { const AC=window.AudioContext||window.webkitAudioContext; audioCtx=new AC(); }
-    if (audioCtx.state==='suspended') audioCtx.resume().catch(()=>{});
-  }
-  function playBeep(phaseName) {
-    try {
-      ensureCtx();
-      const ctx=audioCtx, now=ctx.currentTime;
-      const osc=ctx.createOscillator(), g=ctx.createGain();
-      const n=phaseName.toLowerCase();
-      osc.type = n.includes('inhale')?'sine': n.includes('hold')?'triangle':'sine';
-      osc.frequency.value = n.includes('inhale')?660: n.includes('hold')?980:440;
-      g.gain.setValueAtTime(0.0001,now);
-      g.gain.exponentialRampToValueAtTime(0.28,now+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001,now+0.20);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(now); osc.stop(now+0.22);
-    } catch(e){}
+  function ensureCtx(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();}if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});}
+  function playBeep(pn){
+    try{
+      ensureCtx(); const ctx=audioCtx,now=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain(),n=pn.toLowerCase();
+      o.type=n.includes('inhale')?'sine':n.includes('hold')?'triangle':'sine';
+      o.frequency.value=n.includes('inhale')?660:n.includes('hold')?980:440;
+      g.gain.setValueAtTime(0.0001,now);g.gain.exponentialRampToValueAtTime(0.28,now+0.01);g.gain.exponentialRampToValueAtTime(0.0001,now+0.20);
+      o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+0.22);
+    }catch(e){}
   }
 
   /* ── Arc ── */
-  const arcColor = p => {
-    const n=(p||'').toLowerCase();
-    return n.includes('inhale')?'#26a69a': n.includes('hold')?'#e53935':'#4a90e2';
-  };
-  function startArc(durSec, phaseName) {
-    cancelAnimationFrame(arcFrame);
-    arcEl.style.stroke = arcColor(phaseName);
-    const isHold = (phaseName||'').toLowerCase().includes('hold');
-    if (isHold) { arcOn=false; arcEl.style.strokeDashoffset='0'; return; }
-    arcOn=true; arcStart=performance.now(); arcDur=durSec*1000;
-    const run = now => {
-      if (!arcOn) return;
-      const p = Math.min((now-arcStart)/arcDur, 1);
-      arcEl.style.strokeDashoffset = CIRC*(1-p);
-      if (p<1) arcFrame=requestAnimationFrame(run);
-    };
+  const arcColor=p=>{const n=(p||'').toLowerCase();return n.includes('inhale')?'#26a69a':n.includes('hold')?'#e53935':'#4a90e2';};
+  function startArc(dur,pn){
+    cancelAnimationFrame(arcFrame); arcEl.style.stroke=arcColor(pn);
+    if((pn||'').toLowerCase().includes('hold')){arcOn=false;arcEl.style.strokeDashoffset='0';return;}
+    arcOn=true;arcStart=performance.now();arcDur=dur*1000;
+    const run=now=>{if(!arcOn)return;const p=Math.min((now-arcStart)/arcDur,1);arcEl.style.strokeDashoffset=CIRC*(1-p);if(p<1)arcFrame=requestAnimationFrame(run);};
     arcFrame=requestAnimationFrame(run);
   }
-  function pauseArc() { arcOn=false; cancelAnimationFrame(arcFrame); }
-  function resumeArc(remSec, phaseName) {
-    if ((phaseName||'').toLowerCase().includes('hold')) return;
-    arcOn=true; arcStart=performance.now()-(arcDur-remSec*1000);
-    const run = now => {
-      if (!arcOn) return;
-      const p=Math.min((now-arcStart)/arcDur,1);
-      arcEl.style.strokeDashoffset=CIRC*(1-p);
-      if (p<1) arcFrame=requestAnimationFrame(run);
-    };
+  function pauseArc(){arcOn=false;cancelAnimationFrame(arcFrame);}
+  function resumeArc(rem,pn){
+    if((pn||'').toLowerCase().includes('hold'))return;
+    arcOn=true;arcStart=performance.now()-(arcDur-rem*1000);
+    const run=now=>{if(!arcOn)return;const p=Math.min((now-arcStart)/arcDur,1);arcEl.style.strokeDashoffset=CIRC*(1-p);if(p<1)arcFrame=requestAnimationFrame(run);};
     arcFrame=requestAnimationFrame(run);
   }
-  function resetArc() {
-    arcOn=false; cancelAnimationFrame(arcFrame);
-    arcEl.style.strokeDashoffset=CIRC; arcEl.style.stroke='#26a69a';
-  }
+  function resetArc(){arcOn=false;cancelAnimationFrame(arcFrame);arcEl.style.strokeDashoffset=CIRC;arcEl.style.stroke='#26a69a';}
 
   /* ── Labels ── */
-  function buildLabels(phases) {
-    labelsRow.innerHTML='';
-    phases.forEach((p,i)=>{
-      const el=document.createElement('div');
-      el.className='plabel'; el.id='pl'+i; el.textContent=p;
-      labelsRow.appendChild(el);
-    });
-  }
-  function setActive(idx, phases) {
-    phases.forEach((p,i)=>{
-      const el=document.getElementById('pl'+i); if(!el) return;
-      el.className='plabel';
-      if(i===idx){ const n=p.toLowerCase(); el.classList.add(n.includes('inhale')?'ai':n.includes('hold')?'ah':'ae'); }
-    });
-  }
+  function buildLabels(phases){labelsRow.innerHTML='';phases.forEach((p,i)=>{const el=document.createElement('div');el.className='plabel';el.id='pl'+i;el.textContent=p;labelsRow.appendChild(el);});}
+  function setActive(idx,phases){phases.forEach((p,i)=>{const el=$('pl'+i);if(!el)return;el.className='plabel';if(i===idx){const n=p.toLowerCase();el.classList.add(n.includes('inhale')?'ai':n.includes('hold')?'ah':'ae');}});}
 
   /* ── Session engine ── */
-  const entry = () => sessionList[qIdx];
-
-  function startPhase(idx) {
-    const e=entry(); phaseIdx=idx;
-    const dur=e.seconds[idx]; phaseRem=dur;
-    phaseNum.textContent=String(dur);
-    setActive(idx, e.phases);
-    playBeep(e.phases[idx]);
-    startArc(dur, e.phases[idx]);
-  }
-
-  function tick() {
-    if (isPaused) return;
-    sesRem=Math.max(0,sesRem-1);
-    phaseRem--;
-    if (phaseRem > 0) { phaseNum.textContent=String(phaseRem); return; }
-
-    const e=entry();
-    const nextPhase=(phaseIdx+1) % e.phases.length;
-
-    if (nextPhase===0) {
-      e.roundsDone++; doneRounds++;
+  const entry=()=>sessionList[qIdx];
+  function startPhase(idx){const e=entry();phaseIdx=idx;const dur=e.seconds[idx];phaseRem=dur;phaseNum.textContent=String(dur);setActive(idx,e.phases);playBeep(e.phases[idx]);startArc(dur,e.phases[idx]);}
+  function tick(){
+    if(isPaused)return;
+    sesRem=Math.max(0,sesRem-1);phaseRem--;
+    if(phaseRem>0){phaseNum.textContent=String(phaseRem);return;}
+    const e=entry(),nextPhase=(phaseIdx+1)%e.phases.length;
+    if(nextPhase===0){
+      e.roundsDone++;doneRounds++;
       roundInd.textContent=`Round ${doneRounds} / ${totalRounds}`;
-      if (e.roundsDone >= e.roundsTotal) {
+      if(e.roundsDone>=e.roundsTotal){
         try{playSelectedEndSound();}catch(err){}
         qIdx++;
-        if (qIdx >= sessionList.length) { endSession(); return; }
+        if(qIdx>=sessionList.length){endSession();return;}
         buildLabels(entry().phases);
         statusEl.textContent=`Pattern ${qIdx+1}/${sessionList.length}: ${entry().ratio.name}`;
-        startPhase(0); return;
+        startPhase(0);return;
       }
     }
     startPhase(nextPhase);
   }
 
-  function startSession() {
+  function startSession(){
     ensureCtx();
-    const inh=getInhale(), rounds=getRounds();
-    const list=queue.length ? queue : [RATIOS[0].id];
-
-    sessionList=list.map(id=>{
-      const r=RATIOS.find(x=>x.id===id);
-      return {ratio:r, phases:r.phases, seconds:phaseSecs(r,inh), roundsTotal:rounds, roundsDone:0};
-    });
-    qIdx=0; phaseIdx=0; doneRounds=0;
+    const inh=getInhale(),rounds=getRounds(),list=queue.length?queue:[RATIOS[0].id];
+    sessionList=list.map(id=>{const r=RATIOS.find(x=>x.id===id);return{ratio:r,phases:r.phases,seconds:phaseSecs(r,inh),roundsTotal:rounds,roundsDone:0};});
+    qIdx=0;phaseIdx=0;doneRounds=0;
     totalRounds=sessionList.reduce((a,e)=>a+e.roundsTotal,0);
     sesRem=sessionList.reduce((t,e)=>t+e.seconds.reduce((a,b)=>a+b,0)*e.roundsTotal,0);
-
+    hideIdle();
     buildLabels(entry().phases);
     statusEl.textContent=`Running — Pattern 1/${sessionList.length}: ${entry().ratio.name}`;
     roundInd.textContent=`Round 1 / ${totalRounds}`;
     startPhase(0);
-
-    clearInterval(ticker); isPaused=false;
-    ticker=setInterval(tick,1000);
-    startBtn.disabled=true; pauseBtn.disabled=false; stopBtn.disabled=false;
-    pauseBtn.textContent='Pause';
+    clearInterval(ticker);isPaused=false;ticker=setInterval(tick,1000);
+    startBtn.disabled=true;pauseBtn.disabled=false;stopBtn.disabled=false;pauseBtn.textContent='Pause';
   }
 
-  function togglePause() {
-    if (!ticker) return;
-    if (!isPaused) {
-      isPaused=true; pauseBtn.textContent='Resume';
-      pauseArc(); statusEl.textContent='Paused';
-    } else {
-      isPaused=false; pauseBtn.textContent='Pause';
-      playBeep(entry().phases[phaseIdx]);
-      resumeArc(phaseRem, entry().phases[phaseIdx]);
-      statusEl.textContent='Running';
-    }
+  function togglePause(){
+    if(!ticker)return;
+    if(!isPaused){isPaused=true;pauseBtn.textContent='Resume';pauseArc();statusEl.textContent='Paused';}
+    else{isPaused=false;pauseBtn.textContent='Pause';playBeep(entry().phases[phaseIdx]);resumeArc(phaseRem,entry().phases[phaseIdx]);statusEl.textContent='Running';}
   }
 
-  function stopSession() {
-    clearInterval(ticker); ticker=null; resetArc();
-    phaseNum.textContent='–'; labelsRow.innerHTML=''; roundInd.textContent='';
+  function stopSession(){
+    clearInterval(ticker);ticker=null;resetArc();labelsRow.innerHTML='';roundInd.textContent='';
     statusEl.textContent='Stopped — press Start to begin again.';
-    startBtn.disabled=false; pauseBtn.disabled=true; stopBtn.disabled=true;
-    pauseBtn.textContent='Pause'; isPaused=false;
-    if(audioCtx){audioCtx.close().catch(()=>{}); audioCtx=null;}
+    startBtn.disabled=false;pauseBtn.disabled=true;stopBtn.disabled=true;pauseBtn.textContent='Pause';isPaused=false;
+    if(audioCtx){audioCtx.close().catch(()=>{});audioCtx=null;}
+    showIdle();
   }
 
-  function endSession() {
-    clearInterval(ticker); ticker=null; resetArc();
-    phaseNum.textContent='🌸'; labelsRow.innerHTML=''; roundInd.textContent='';
+  function endSession(){
+    clearInterval(ticker);ticker=null;resetArc();labelsRow.innerHTML='';roundInd.textContent='';
     statusEl.textContent='Session complete — well done!';
-    startBtn.disabled=false; pauseBtn.disabled=true; stopBtn.disabled=true;
-    pauseBtn.textContent='Pause'; isPaused=false;
+    startBtn.disabled=false;pauseBtn.disabled=true;stopBtn.disabled=true;pauseBtn.textContent='Pause';isPaused=false;
     try{playSelectedEndSound();}catch(e){}
-    setTimeout(()=>{if(audioCtx){audioCtx.close().catch(()=>{}); audioCtx=null;}},12000);
+    setTimeout(()=>{if(audioCtx){audioCtx.close().catch(()=>{});audioCtx=null;}},12000);
+    showIdle();
   }
 
   /* ── End sounds ── */
-  function playSelectedEndSound(){
-    ensureCtx();
-    const sel=soundSel.value;
-    if(sel==='external'&&extBuffer){playExtBuf();return;}
-    if(sel==='builtin_chimes')playChimes();
-    else if(sel==='builtin_bowl')playBowl();
-    else if(sel==='builtin_bell')playBell();
-    else if(sel==='builtin_ocean')playOcean();
-    else playHarp();
-  }
-  function playHarp(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.6,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4);m.connect(c.destination);[440,550,660,880].forEach((f,i)=>{const t=n+i*.18,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.6,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.6);o.connect(g);g.connect(m);o.start(t);o.stop(t+1.6);})}
-  function playChimes(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.75,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4.5);m.connect(c.destination);[660,880,990,1320].forEach((f,i)=>{const t=n+i*.25,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.8,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+3.2);o.connect(g);g.connect(m);o.start(t);o.stop(t+3.2);})}
+  function playSelectedEndSound(){ensureCtx();const s=soundSel.value;if(s==='external'&&extBuffer){playExtBuf();return;}if(s==='builtin_chimes')playChimes();else if(s==='builtin_bowl')playBowl();else if(s==='builtin_bell')playBell();else if(s==='builtin_ocean')playOcean();else playHarp();}
+  function playHarp(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.6,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4);m.connect(c.destination);[440,550,660,880].forEach((f,i)=>{const t=n+i*.18,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.6,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.6);o.connect(g);g.connect(m);o.start(t);o.stop(t+1.6);});}
+  function playChimes(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.75,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4.5);m.connect(c.destination);[660,880,990,1320].forEach((f,i)=>{const t=n+i*.25,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.8,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+3.2);o.connect(g);g.connect(m);o.start(t);o.stop(t+3.2);});}
   function playBowl(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.85,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4.8);m.connect(c.destination);const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=220;g.gain.setValueAtTime(.8,n);o.connect(g);g.connect(m);o.start(n);o.stop(n+4.8);}
-  function playBell(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.8,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+3.8);m.connect(c.destination);[880,1320,1760].forEach((f,i)=>{const t=n+i*.05,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.6/(i+1),t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+3.8);o.connect(g);g.connect(m);o.start(t);o.stop(t+3.8);})}
+  function playBell(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.8,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+3.8);m.connect(c.destination);[880,1320,1760].forEach((f,i)=>{const t=n+i*.05,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.6/(i+1),t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+3.8);o.connect(g);g.connect(m);o.start(t);o.stop(t+3.8);});}
   function playOcean(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.85,n+.04);m.gain.exponentialRampToValueAtTime(.0001,n+4.8);m.connect(c.destination);const buf=c.createBuffer(1,c.sampleRate*1.2,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*.2));const s=c.createBufferSource(),lp=c.createBiquadFilter();s.buffer=buf;lp.type='lowpass';lp.frequency.value=1200;s.connect(lp);lp.connect(m);s.start(n);s.stop(n+4.8);}
   function playExtBuf(){const c=audioCtx,n=c.currentTime,s=c.createBufferSource(),g=c.createGain();s.buffer=extBuffer;g.gain.setValueAtTime(1,n);s.connect(g);g.connect(c.destination);s.start(n);s.stop(n+10);}
-
-  async function loadExtAudio(url){
-    try{
-      ensureCtx(); statusEl.textContent='Loading external sound…';
-      const r=await fetch(url,{mode:'cors'});
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      extBuffer=await audioCtx.decodeAudioData(await r.arrayBuffer());
-      soundSel.value='external'; statusEl.textContent='External sound loaded.';
-    }catch(e){ statusEl.textContent='Failed to load audio (check URL/CORS).'; }
-  }
+  async function loadExtAudio(url){try{ensureCtx();statusEl.textContent='Loading external sound…';const r=await fetch(url,{mode:'cors'});if(!r.ok)throw new Error('HTTP '+r.status);extBuffer=await audioCtx.decodeAudioData(await r.arrayBuffer());soundSel.value='external';statusEl.textContent='External sound loaded.';}catch(e){statusEl.textContent='Failed to load audio (check URL/CORS.';}}
 
   /* ── Wire up ── */
-  startBtn.addEventListener('click', startSession);
-  pauseBtn.addEventListener('click', togglePause);
-  stopBtn.addEventListener('click',  stopSession);
-  inhaleInp.addEventListener('input', renderQueue);
-  roundsInp.addEventListener('input', renderQueue);
-  loadBtn.addEventListener('click', ()=>{ const u=extUrlInp.value.trim(); if(u) loadExtAudio(u); });
-  findBtn.addEventListener('click', ()=>{ window.open('https://freesound.org','_blank'); window.open('https://pixabay.com/sound-effects/','_blank'); });
-  inhaleInp.addEventListener('keydown', e=>{ if(e.key==='Enter') startSession(); });
-  roundsInp.addEventListener('keydown', e=>{ if(e.key==='Enter') startSession(); });
+  startBtn.addEventListener('click',startSession);
+  pauseBtn.addEventListener('click',togglePause);
+  stopBtn.addEventListener('click',stopSession);
+  inhaleInp.addEventListener('input',renderQueue);
+  roundsInp.addEventListener('input',renderQueue);
+  loadBtn.addEventListener('click',()=>{const u=extUrlInp.value.trim();if(u)loadExtAudio(u);});
+  findBtn.addEventListener('click',()=>{window.open('https://freesound.org','_blank');window.open('https://pixabay.com/sound-effects/','_blank');});
+  inhaleInp.addEventListener('keydown',e=>{if(e.key==='Enter')startSession();});
+  roundsInp.addEventListener('keydown',e=>{if(e.key==='Enter')startSession();});
 
   /* ── Init ── */
-  buildCards(); renderQueue(); resetArc();
+  buildCards(); renderQueue(); drawTicks(); resetArc(); showIdle();
 })();
 </script>
 </body>
