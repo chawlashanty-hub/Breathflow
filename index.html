@@ -595,6 +595,7 @@
       e.roundsDone++; doneRounds++;
       roundInd.textContent=`Round ${doneRounds} / ${totalRounds}`;
       if (e.roundsDone >= e.roundsTotal) {
+        try{playSelectedEndSound();}catch(err){}
         qIdx++;
         if (qIdx >= sessionList.length) { endSession(); return; }
         buildLabels(entry().phases);
