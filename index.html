@@ -97,51 +97,85 @@
   }
   .ctrl input[type=number]:focus { border-color: var(--accent); }
 
-  /* ── Queue display ── */
+  /* ── Queue section ── */
   .queue-section { margin-bottom: 18px; }
-  .queue-row {
-    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-    min-height: 38px;
-  }
-  .q-item {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 12px 5px 10px;
-    border-radius: 99px; border: 1.5px solid var(--border);
-    background: #fff; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: background .15s;
-  }
-  .q-item:hover { background: #fdecea; border-color: #e57373; }
-  .q-num  { font-size: 11px; color: var(--muted); }
-  .q-ratio{ font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent-2); }
-  .q-x   { color: #e57373; font-size: 15px; line-height: 1; }
-  .q-empty{ font-size: 13px; color: var(--muted); font-style: italic; }
+  .queue-col { display: flex; flex-direction: column; gap: 8px; }
+  .q-empty { font-size: 13px; color: var(--muted); font-style: italic; }
 
-  /* ── Phase preview ── */
-  .preview-box {
+  /* ── Queue item (expanded pill) ── */
+  .q-item {
+    display: flex; align-items: center; gap: 0;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .15s;
+  }
+  .q-item:hover { border-color: #e57373; }
+  .q-item:hover .q-remove { background: #fdecea; color: #e53935; }
+
+  .q-num-block {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; min-width: 30px; height: 100%;
     background: var(--card-inner);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    min-height: 46px;
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    border-right: 1.5px solid var(--border);
+    font-size: 12px; font-weight: 700; color: var(--accent-2);
+    font-family: 'DM Mono', monospace;
+    align-self: stretch;
   }
-  .prev-label { font-size: 12px; color: var(--muted); font-weight: 500; }
-  .phase-chip {
+
+  .q-body {
+    flex: 1; display: flex; align-items: center; flex-wrap: wrap;
+    gap: 6px; padding: 8px 10px;
+  }
+
+  .q-ratio-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500; color: var(--accent-2);
+    margin-right: 2px;
+  }
+  .q-name {
+    font-size: 12px; font-weight: 600; color: var(--text);
+    margin-right: 6px;
+  }
+
+  .q-phases { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .qphase-chip {
     display: inline-flex; align-items: center;
-    padding: 4px 11px; border-radius: 99px;
-    font-size: 13px; font-weight: 600;
+    padding: 3px 10px; border-radius: 99px;
+    font-size: 12px; font-weight: 600;
   }
-  .chip-i { background: rgba(38,166,154,.14); color: #1a7a72; }
-  .chip-h { background: rgba(229,57,53,.12);  color: #b71c1c; }
-  .chip-e { background: rgba(74,144,226,.14); color: #1555a0; }
-  .chip-sep { color: var(--muted); font-size: 13px; }
-  .pat-sep  { color: var(--muted); font-size: 18px; margin: 0 4px; }
-  .session-total {
-    margin-left: auto; font-size: 13px; font-weight: 600;
-    font-family: 'DM Mono', monospace; color: var(--accent-2);
+  .qchip-i { background: rgba(38,166,154,.14); color: #1a7a72; }
+  .qchip-h { background: rgba(229,57,53,.12);  color: #b71c1c; }
+  .qchip-e { background: rgba(74,144,226,.14); color: #1555a0; }
+  .qchip-sep { font-size: 12px; color: var(--muted); }
+
+  .q-time {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500; color: var(--muted);
     white-space: nowrap;
+    padding-right: 4px;
   }
+
+  .q-remove {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; min-width: 32px; align-self: stretch;
+    border-left: 1.5px solid var(--border);
+    color: #c0c0c0; font-size: 16px; cursor: pointer;
+    background: transparent; transition: background .15s, color .15s;
+    user-select: none;
+  }
+
+  .q-total-row {
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 6px 10px 2px;
+    font-size: 13px; font-weight: 600;
+    font-family: 'DM Mono', monospace; color: var(--accent-2);
+    border-top: 1px dashed var(--border);
+    margin-top: 2px;
+  }
+  .q-total-label { font-size: 11px; font-weight: 400; color: var(--muted); margin-right: 6px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .06em; }
 
   /* ── Sound row ── */
   .sound-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
@@ -229,15 +263,14 @@
   </div>
 
   <div class="queue-section">
-    <div class="sec-label">Your sequence <span style="font-weight:400;font-size:10px;text-transform:none">(click a pill to remove)</span></div>
-    <div class="queue-row" id="queueRow">
+    <div class="sec-label">Your sequence <span style="font-weight:400;font-size:10px;text-transform:none">(click × to remove)</span></div>
+    <div class="queue-col" id="queueCol">
       <span class="q-empty" id="qEmpty">No patterns selected — click cards above to build your sequence.</span>
     </div>
-  </div>
-
-  <div class="sec-label">Phase breakdown &amp; session total</div>
-  <div class="preview-box" id="previewBox">
-    <span class="prev-label">Select a pattern and set inhale seconds to preview.</span>
+    <div class="q-total-row" id="totalRow" style="display:none">
+      <span class="q-total-label">Session total</span>
+      <span id="totalTime">00:00</span>
+    </div>
   </div>
 
   <div class="sound-row">
@@ -282,7 +315,6 @@
 
 <script>
 (() => {
-  /* ─── Definitions (fixed order: 1:1, 1:2:4, 1:1:1, 1:1:1:1) ─── */
   const RATIOS = [
     { id:'1:1',     label:'1 : 1',     name:'Equal Breathing',
       desc:'Same duration in & out. Calming and balancing.',
@@ -298,13 +330,13 @@
       parts:[1,1,1,1], phases:['Inhale','Hold','Exhale','Hold'] },
   ];
 
-  /* ─── DOM ─── */
   const ratioGrid  = document.getElementById('ratioGrid');
   const inhaleInp  = document.getElementById('inhaleInput');
   const roundsInp  = document.getElementById('roundsInput');
-  const queueRow   = document.getElementById('queueRow');
+  const queueCol   = document.getElementById('queueCol');
   const qEmpty     = document.getElementById('qEmpty');
-  const previewBox = document.getElementById('previewBox');
+  const totalRow   = document.getElementById('totalRow');
+  const totalTime  = document.getElementById('totalTime');
   const soundSel   = document.getElementById('soundSelect');
   const extUrlInp  = document.getElementById('externalUrl');
   const loadBtn    = document.getElementById('loadBtn');
@@ -318,21 +350,18 @@
   const roundInd   = document.getElementById('roundInd');
   const statusEl   = document.getElementById('statusEl');
 
-  const CIRC = 2 * Math.PI * 90; // ≈565
+  const CIRC = 2 * Math.PI * 90;
 
-  /* ─── App state ─── */
-  let queue = [];       // ratio ids, max 4, no repeats, user-chosen order
+  let queue = [];
   let audioCtx  = null;
   let extBuffer = null;
 
-  // runtime
   let sessionList = [];
   let qIdx = 0, phaseIdx = 0, phaseRem = 0;
   let sesRem = 0, ticker = null, isPaused = false;
   let arcStart = 0, arcDur = 0, arcFrame = null, arcOn = false;
   let totalRounds = 0, doneRounds = 0;
 
-  /* ─── Helpers ─── */
   const getInhale = () => Math.max(1, parseInt(inhaleInp.value) || 4);
   const getRounds = () => Math.max(1, parseInt(roundsInp.value) || 2);
   const fmtMMSS = s => {
@@ -342,7 +371,6 @@
   const phaseSecs = (ratio, inh) =>
     ratio.parts.map(p => Math.round(inh * p / ratio.parts[0]));
 
-  /* ─── Cards ─── */
   function buildCards() {
     ratioGrid.innerHTML = '';
     RATIOS.forEach(r => {
@@ -350,7 +378,6 @@
       c.className = 'rcard'; c.dataset.id = r.id;
       c.innerHTML = `
         <div class="rlabel">${r.label}</div>
-        <div class="rname">${r.name}</div>
         <div class="rdesc">${r.desc}</div>
         <div class="rpills">${r.phases.map(p=>`<span class="pill ${p==='Inhale'?'pi':p==='Hold'?'ph':'pe'}">${p}</span>`).join('')}</div>
       `;
@@ -377,81 +404,99 @@
   }
 
   function addToQueue(id) {
-    if (queue.includes(id)) return;  // no repeats
-    if (queue.length >= 4) return;   // max 4
+    if (queue.includes(id)) return;
+    if (queue.length >= 4) return;
     queue.push(id);
     refreshCardStyles();
     renderQueue();
-    renderPreview();
   }
 
-  /* ─── Queue pills ─── */
+  /* ── Build expanded queue items with phase breakdown ── */
   function renderQueue() {
-    Array.from(queueRow.querySelectorAll('.q-item')).forEach(el => el.remove());
-    if (!queue.length) { qEmpty.style.display = ''; return; }
-    qEmpty.style.display = 'none';
-    queue.forEach((id, idx) => {
-      const r = RATIOS.find(x => x.id === id);
-      const item = document.createElement('div');
-      item.className = 'q-item'; item.title = 'Click to remove';
-      item.innerHTML = `<span class="q-num">${idx+1}</span><span class="q-ratio">${r.label}</span><span style="font-size:12px;color:var(--muted)">${r.name}</span><span class="q-x">×</span>`;
-      item.addEventListener('click', () => {
-        queue.splice(idx, 1);
-        refreshCardStyles(); renderQueue(); renderPreview();
-      });
-      queueRow.appendChild(item);
-    });
-  }
+    Array.from(queueCol.querySelectorAll('.q-item')).forEach(el => el.remove());
 
-  /* ─── Preview: e.g. "Equal: i4s → h8s → o16s  |  Box: i3s → h3s → o3s → h3s   2 rounds · total 01:24" ─── */
-  function renderPreview() {
-    previewBox.innerHTML = '';
     if (!queue.length) {
-      previewBox.innerHTML = '<span class="prev-label">Select a pattern and set inhale seconds to preview.</span>';
+      qEmpty.style.display = '';
+      totalRow.style.display = 'none';
       return;
     }
+    qEmpty.style.display = 'none';
+
     const inh = getInhale(), rounds = getRounds();
     let grand = 0;
 
-    queue.forEach((id, qi) => {
+    queue.forEach((id, idx) => {
       const r = RATIOS.find(x => x.id === id);
       const secs = phaseSecs(r, inh);
-      grand += secs.reduce((a,b)=>a+b,0) * rounds;
+      const patternSec = secs.reduce((a,b) => a+b, 0) * rounds;
+      grand += patternSec;
 
-      if (qi > 0) {
-        const sep = document.createElement('span');
-        sep.className = 'pat-sep'; sep.textContent = '|';
-        previewBox.appendChild(sep);
-      }
+      const item = document.createElement('div');
+      item.className = 'q-item';
 
-      // pattern name label
-      const lbl = document.createElement('span');
-      lbl.className = 'prev-label';
-      lbl.style.marginRight = '2px';
-      lbl.textContent = r.name + ':';
-      previewBox.appendChild(lbl);
+      /* Number block */
+      const numBlock = document.createElement('div');
+      numBlock.className = 'q-num-block';
+      numBlock.textContent = idx + 1;
+      item.appendChild(numBlock);
 
+      /* Body */
+      const body = document.createElement('div');
+      body.className = 'q-body';
+
+      /* Ratio label + name */
+      const rlbl = document.createElement('span');
+      rlbl.className = 'q-ratio-label';
+      rlbl.textContent = r.label;
+      body.appendChild(rlbl);
+
+      /* Phase chips */
+      const phasesWrap = document.createElement('div');
+      phasesWrap.className = 'q-phases';
       r.phases.forEach((p, i) => {
         if (i > 0) {
-          const arr = document.createElement('span');
-          arr.className = 'chip-sep'; arr.textContent = '→';
-          previewBox.appendChild(arr);
+          const sep = document.createElement('span');
+          sep.className = 'qchip-sep'; sep.textContent = '→';
+          phasesWrap.appendChild(sep);
         }
         const chip = document.createElement('span');
-        chip.className = 'phase-chip ' + (p==='Inhale'?'chip-i':p==='Hold'?'chip-h':'chip-e');
-        // show full label + seconds: "Inhale 4s"
-        chip.textContent = p + ' ' + secs[i] + 's';
-        previewBox.appendChild(chip);
+        const cls = p === 'Inhale' ? 'qchip-i' : p === 'Hold' ? 'qchip-h' : 'qchip-e';
+        chip.className = 'qphase-chip ' + cls;
+        // short labels
+        const shortLabel = p === 'Inhale' ? 'in' : p === 'Hold' ? 'hold' : 'out';
+        chip.textContent = shortLabel + ' ' + secs[i] + 's';
+        phasesWrap.appendChild(chip);
       });
+      body.appendChild(phasesWrap);
+
+      /* Per-pattern time */
+      const timeEl = document.createElement('span');
+      timeEl.className = 'q-time';
+      timeEl.textContent = fmtMMSS(patternSec);
+      body.appendChild(timeEl);
+
+      item.appendChild(body);
+
+      /* Remove button */
+      const removeEl = document.createElement('div');
+      removeEl.className = 'q-remove';
+      removeEl.textContent = '×';
+      removeEl.title = 'Remove';
+      removeEl.addEventListener('click', () => {
+        queue.splice(idx, 1);
+        refreshCardStyles(); renderQueue();
+      });
+      item.appendChild(removeEl);
+
+      queueCol.appendChild(item);
     });
 
-    const tot = document.createElement('span');
-    tot.className = 'session-total';
-    tot.textContent = rounds + ' round' + (rounds!==1?'s':'') + ' · total ' + fmtMMSS(grand);
-    previewBox.appendChild(tot);
+    /* Grand total */
+    totalTime.textContent = fmtMMSS(grand);
+    totalRow.style.display = 'flex';
   }
 
-  /* ─── Audio ─── */
+  /* ── Audio ── */
   function ensureCtx() {
     if (!audioCtx) { const AC=window.AudioContext||window.webkitAudioContext; audioCtx=new AC(); }
     if (audioCtx.state==='suspended') audioCtx.resume().catch(()=>{});
@@ -472,7 +517,7 @@
     } catch(e){}
   }
 
-  /* ─── Arc ─── */
+  /* ── Arc ── */
   const arcColor = p => {
     const n=(p||'').toLowerCase();
     return n.includes('inhale')?'#26a69a': n.includes('hold')?'#e53935':'#4a90e2';
@@ -508,7 +553,7 @@
     arcEl.style.strokeDashoffset=CIRC; arcEl.style.stroke='#26a69a';
   }
 
-  /* ─── Labels ─── */
+  /* ── Labels ── */
   function buildLabels(phases) {
     labelsRow.innerHTML='';
     phases.forEach((p,i)=>{
@@ -525,7 +570,7 @@
     });
   }
 
-  /* ─── Session engine ─── */
+  /* ── Session engine ── */
   const entry = () => sessionList[qIdx];
 
   function startPhase(idx) {
@@ -543,16 +588,13 @@
     phaseRem--;
     if (phaseRem > 0) { phaseNum.textContent=String(phaseRem); return; }
 
-    // phase done
     const e=entry();
     const nextPhase=(phaseIdx+1) % e.phases.length;
 
     if (nextPhase===0) {
-      // round done
       e.roundsDone++; doneRounds++;
       roundInd.textContent=`Round ${doneRounds} / ${totalRounds}`;
       if (e.roundsDone >= e.roundsTotal) {
-        // pattern done — next pattern or end
         qIdx++;
         if (qIdx >= sessionList.length) { endSession(); return; }
         buildLabels(entry().phases);
@@ -619,7 +661,7 @@
     setTimeout(()=>{if(audioCtx){audioCtx.close().catch(()=>{}); audioCtx=null;}},12000);
   }
 
-  /* ─── End sounds ─── */
+  /* ── End sounds ── */
   function playSelectedEndSound(){
     ensureCtx();
     const sel=soundSel.value;
@@ -647,19 +689,19 @@
     }catch(e){ statusEl.textContent='Failed to load audio (check URL/CORS).'; }
   }
 
-  /* ─── Wire up ─── */
+  /* ── Wire up ── */
   startBtn.addEventListener('click', startSession);
   pauseBtn.addEventListener('click', togglePause);
   stopBtn.addEventListener('click',  stopSession);
-  inhaleInp.addEventListener('input', renderPreview);
-  roundsInp.addEventListener('input', renderPreview);
+  inhaleInp.addEventListener('input', renderQueue);
+  roundsInp.addEventListener('input', renderQueue);
   loadBtn.addEventListener('click', ()=>{ const u=extUrlInp.value.trim(); if(u) loadExtAudio(u); });
   findBtn.addEventListener('click', ()=>{ window.open('https://freesound.org','_blank'); window.open('https://pixabay.com/sound-effects/','_blank'); });
   inhaleInp.addEventListener('keydown', e=>{ if(e.key==='Enter') startSession(); });
   roundsInp.addEventListener('keydown', e=>{ if(e.key==='Enter') startSession(); });
 
-  /* ─── Init ─── */
-  buildCards(); renderQueue(); renderPreview(); resetArc();
+  /* ── Init ── */
+  buildCards(); renderQueue(); resetArc();
 })();
 </script>
 </body>
