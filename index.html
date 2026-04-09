@@ -371,16 +371,17 @@
     });
   }
 
+  /* ── FIX: iterate over queue directly instead of RATIOS ── */
   function refreshCardStyles(){
-    RATIOS.forEach(r=>{
-      const el=ratioGrid.querySelector(`[data-id="${r.id}"]`); if(!el)return;
-      el.querySelectorAll('.queue-badge').forEach(b=>b.remove());
-      const pos=queue.indexOf(r.id);
-      if(pos!==-1){
-        el.classList.add('in-queue');
-        const b=document.createElement('div'); b.className='queue-badge'; b.textContent=pos+1;
-        el.appendChild(b);
-      } else el.classList.remove('in-queue');
+    // Clear all badges and states first in one clean pass
+    ratioGrid.querySelectorAll('.queue-badge').forEach(b=>b.remove());
+    ratioGrid.querySelectorAll('.rcard').forEach(el=>el.classList.remove('in-queue'));
+    // Re-apply based on queue order
+    queue.forEach((id,pos)=>{
+      const el=ratioGrid.querySelector(`[data-id="${id}"]`); if(!el)return;
+      el.classList.add('in-queue');
+      const b=document.createElement('div'); b.className='queue-badge'; b.textContent=pos+1;
+      el.appendChild(b);
     });
   }
 
