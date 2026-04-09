@@ -8,543 +8,677 @@
 <style>
   :root {
     --bg: #f0f4f0;
-    --card: rgba(255,255,255,0.82);
-    --accent: #4caf80;
-    --accent-2: #2e8b5e;
+    --card: rgba(255,255,255,0.92);
+    --accent: #1D9E75;
+    --accent-2: #0F6E56;
+    --accent-light: #E1F5EE;
     --muted: #7a8a7a;
     --text: #1a2a1a;
-    --border: rgba(60,100,60,0.13);
+    --border: rgba(60,100,60,0.15);
     --card-inner: rgba(240,248,240,0.7);
+    --amber-bg: #FAEEDA;
+    --amber-border: #EF9F27;
+    --amber-text: #633806;
+    --red-bg: #FAECE7;
+    --red-border: #D85A30;
+    --red-text: #4A1B0C;
+    --blue-bg: #E6F1FB;
+    --blue-text: #042C53;
+    --blue-active: #378ADD;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     min-height: 100vh;
-    display: flex; align-items: flex-start; justify-content: center;
     font-family: 'DM Sans', sans-serif;
-    background: var(--bg); color: var(--text); padding: 24px 16px;
+    background: var(--bg); color: var(--text);
+    padding: 20px 16px 40px;
   }
-  .card {
-    width: 100%; max-width: 780px;
-    background: var(--card);
-    padding: 28px 28px;
-    border-radius: 20px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
-    border: 1px solid var(--border);
+  .app { max-width: 780px; margin: 0 auto; }
+
+  /* ── Top row ── */
+  .top-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+  .app-title { font-size: 22px; font-weight: 600; flex: 1; letter-spacing: -.3px; }
+  .app-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .time-ctrl { display: flex; align-items: center; gap: 8px; }
+  .time-ctrl label { font-size: 13px; color: var(--muted); }
+  .time-ctrl input {
+    width: 72px; text-align: center; font-size: 16px; font-weight: 500;
+    font-family: 'DM Mono', monospace; padding: 8px 10px;
+    border-radius: 10px; border: 1.5px solid var(--border);
+    background: #fff; color: var(--text); outline: none;
   }
-  h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 2px; }
-  .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
-  .sec-label {
-    font-size: 11px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: .08em; color: var(--muted); margin-bottom: 9px;
+  .time-ctrl input:focus { border-color: var(--accent); }
+  .time-ctrl span { font-size: 13px; color: var(--muted); }
+
+  /* ── Saved banner ── */
+  .saved-banner {
+    display: none; align-items: center; gap: 8px;
+    background: var(--accent-light); border-radius: 10px;
+    padding: 8px 12px; margin-bottom: 14px;
+    font-size: 12px; color: var(--accent-2);
+    border: 1px solid rgba(29,158,117,.2);
   }
-  .ratio-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; margin-bottom: 20px;
+  .saved-banner.show { display: flex; }
+  .saved-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .saved-banner button {
+    margin-left: auto; font-size: 11px; background: none;
+    border: 1px solid #5DCAA5; border-radius: 6px;
+    padding: 3px 9px; color: var(--accent-2); cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
   }
-  @media(max-width:620px){ .ratio-grid { grid-template-columns: repeat(2,1fr); } }
-  .rcard {
-    border: 1.5px solid var(--border); border-radius: 14px;
-    padding: 12px 12px 10px; cursor: pointer; background: var(--card-inner);
-    transition: border-color .18s, box-shadow .18s; user-select: none; position: relative;
+  .saved-banner button:hover { background: rgba(29,158,117,.1); }
+  .save-indicator {
+    font-size: 11px; color: var(--accent); text-align: right;
+    margin-bottom: 10px; min-height: 15px;
+    transition: opacity .6s ease; font-family: 'DM Mono', monospace;
   }
-  .rcard:hover:not(.in-queue) { border-color: var(--accent); }
-  .rcard.in-queue { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(76,175,128,0.18); cursor: not-allowed; }
-  .rcard .rlabel { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--accent-2); margin-bottom: 3px; }
-  .rcard .rdesc  { font-size: 11px; color: var(--muted); line-height: 1.45; margin-bottom: 8px; }
-  .rcard .rpills { display: flex; gap: 4px; flex-wrap: wrap; }
-  .pill { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
-  .pi { background: rgba(38,166,154,.15); color: #1a7a72; }
-  .ph { background: rgba(229,57,53,.12);  color: #b71c1c; }
-  .pe { background: rgba(74,144,226,.15); color: #1a5fa0; }
-  .queue-badge {
-    position: absolute; top: 7px; right: 7px; width: 20px; height: 20px; border-radius: 50%;
-    background: var(--accent); color: #fff; font-size: 11px; font-weight: 700;
+  .save-indicator.fade { opacity: 0; }
+
+  /* ── Phase cards grid ── */
+  .phases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  @media(max-width:540px){ .phases-grid { grid-template-columns: 1fr; } }
+
+  .phase-card {
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 14px; transition: border-color .2s;
+  }
+  .phase-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+
+  .phase-header { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+  .phase-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent-light); color: var(--accent-2);
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .phase-title { font-size: 14px; font-weight: 600; }
+  .phase-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  /* Difficulty buttons */
+  .diff-row { display: flex; gap: 6px; margin-bottom: 8px; }
+  .diff-btn {
+    flex: 1; padding: 7px 4px; font-size: 12px; font-weight: 600;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--card-inner); color: var(--muted);
+    cursor: pointer; transition: all .15s; text-align: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .diff-btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .diff-btn.active.easy  { background: var(--accent-light); border-color: #5DCAA5; color: var(--accent-2); }
+  .diff-btn.active.medium{ background: var(--amber-bg);    border-color: var(--amber-border); color: var(--amber-text); }
+  .diff-btn.active.hard  { background: var(--red-bg);      border-color: var(--red-border);   color: var(--red-text); }
+
+  /* Sub-level buttons */
+  .sub-levels { display: none; gap: 5px; margin-bottom: 8px; }
+  .sub-levels.open { display: flex; }
+  .sub-btn {
+    flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 500;
+    border: 1.5px solid var(--border); border-radius: 9px;
+    background: #fff; color: var(--muted);
+    cursor: pointer; transition: all .15s; text-align: center;
+    font-family: 'DM Mono', monospace;
+  }
+  .sub-btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .sub-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .level-preview { font-size: 11px; color: var(--muted); min-height: 16px; line-height: 1.5; }
+  .level-preview span { color: var(--accent-2); font-weight: 600; }
+
+  /* ── Session summary ── */
+  .session-info {
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 16px;
+    display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+  }
+  .si-item { display: flex; flex-direction: column; gap: 2px; }
+  .si-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .si-val { font-size: 16px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .si-phases { flex: 1; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .phase-pill {
+    font-size: 11px; padding: 3px 10px; border-radius: 99px;
+    background: var(--accent-light); color: var(--accent-2); font-weight: 600;
+  }
+
+  /* ── Buttons ── */
+  .btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+  .btn-start {
+    background: var(--accent); color: #fff; border: none;
+    padding: 12px 32px; border-radius: 12px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity .15s, transform .1s;
+  }
+  .btn-start:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
+  .btn-start:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-ctrl {
+    padding: 12px 22px; border-radius: 12px; font-size: 15px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid var(--border);
+    background: var(--card); color: var(--text);
+    font-family: 'DM Sans', sans-serif; transition: opacity .15s;
+  }
+  .btn-ctrl:disabled { opacity: .3; cursor: not-allowed; }
+  .btn-ctrl:hover:not(:disabled) { background: var(--accent-light); }
+
+  /* ── Runner / Arc ── */
+  .runner { display: none; flex-direction: column; align-items: center; gap: 14px; }
+  .runner.on { display: flex; }
+
+  .arc-wrap { position: relative; width: 200px; height: 200px; flex-shrink: 0; }
+  .arc-wrap svg { position: absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); }
+  .arc-num {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  }
+  .arc-count { font-size: 52px; font-weight: 600; font-family: 'DM Mono', monospace; line-height: 1; }
+  .arc-pname { font-size: 13px; color: var(--muted); }
+
+  .runner-info { text-align: center; }
+  .ri-pattern { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .ri-round { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .ri-status { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  .phase-chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+  .pchip { padding: 5px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+  .pchip.ci { background: var(--accent-light); color: var(--accent-2); }
+  .pchip.ch { background: var(--red-bg);       color: var(--red-text); }
+  .pchip.ce { background: var(--blue-bg);      color: var(--blue-text); }
+  .pchip.active-ci { background: var(--accent);    color: #fff; }
+  .pchip.active-ch { background: var(--red-border); color: #fff; }
+  .pchip.active-ce { background: var(--blue-active); color: #fff; }
+
+  /* ── Idle watch ── */
+  .watch-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; padding: 10px 0;
+  }
+  .watch-face {
+    position: relative; width: 200px; height: 200px;
     display: flex; align-items: center; justify-content: center;
   }
-  .controls-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
-  .ctrl { display: flex; flex-direction: column; gap: 5px; }
-  .ctrl label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .ctrl input[type=number] {
-    width: 100px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border);
-    background: #fff; font-size: 16px; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text);
-    outline: none; transition: border-color .15s;
-  }
-  .ctrl input[type=number]:focus { border-color: var(--accent); }
-  .queue-section { margin-bottom: 18px; }
-  .queue-col { display: flex; flex-direction: column; gap: 8px; }
-  .q-empty { font-size: 13px; color: var(--muted); font-style: italic; }
-  .q-item {
-    display: flex; align-items: center; border: 1.5px solid var(--border);
-    border-radius: 14px; background: #fff; overflow: hidden; transition: border-color .15s;
-  }
-  .q-item:hover { border-color: #e57373; }
-  .q-item:hover .q-remove { background: #fdecea; color: #e53935; }
-  .q-num-block {
-    display: flex; align-items: center; justify-content: center;
-    width: 30px; min-width: 30px; align-self: stretch;
-    background: var(--card-inner); border-right: 1.5px solid var(--border);
-    font-size: 12px; font-weight: 700; color: var(--accent-2); font-family: 'DM Mono', monospace;
-  }
-  .q-body { flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
-  .q-ratio-label { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--accent-2); margin-right: 2px; }
-  .q-phases { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-  .qphase-chip { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; }
-  .qchip-i { background: rgba(38,166,154,.14); color: #1a7a72; }
-  .qchip-h { background: rgba(229,57,53,.12);  color: #b71c1c; }
-  .qchip-e { background: rgba(74,144,226,.14); color: #1555a0; }
-  .qchip-sep { font-size: 12px; color: var(--muted); }
-  .q-time { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; padding-right: 4px; }
-  .q-remove {
-    display: flex; align-items: center; justify-content: center;
-    width: 32px; min-width: 32px; align-self: stretch;
-    border-left: 1.5px solid var(--border); color: #c0c0c0; font-size: 16px; cursor: pointer;
-    background: transparent; transition: background .15s, color .15s; user-select: none;
-  }
-  .q-total-row {
-    display: flex; align-items: center; justify-content: flex-end;
-    padding: 6px 10px 2px; font-size: 13px; font-weight: 600;
-    font-family: 'DM Mono', monospace; color: var(--accent-2);
-    border-top: 1px dashed var(--border); margin-top: 2px;
-  }
-  .q-total-label { font-size: 11px; font-weight: 400; color: var(--muted); margin-right: 6px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .06em; }
-  .sound-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
-  .sound-row select { padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; }
-  .sound-row input[type=text] { padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font-size: 12px; width: 210px; outline: none; font-family: 'DM Mono', monospace; color: var(--text); }
-  .btn-sm { padding: 9px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card-inner); cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); transition: background .15s; }
-  .btn-sm:hover { background: #e0f0e8; }
-  .buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 22px; }
-  .btn-main { padding: 11px 30px; border-radius: 12px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity .15s, transform .1s; }
-  .btn-main:hover:not(:disabled) { opacity: .85; transform: translateY(-1px); }
-  .btn-main:disabled { opacity: .38; cursor: not-allowed; }
-  .btn-start { background: var(--accent); color: #fff; }
-  .btn-pause { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
-  .btn-stop  { background: #fdecea; color: #c62828; border: 1.5px solid rgba(198,40,40,.18); }
-
-  /* ── Loader / Circle ── */
-  .loader-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .loader { position: relative; width: 210px; height: 210px; display: flex; align-items: center; justify-content: center; }
-
-  /* Active arc — hidden by default */
-  .arc-svg {
-    position: absolute; top:0; left:0; width:100%; height:100%;
-    transform: rotate(-90deg);
-    opacity: 0; transition: opacity .5s ease;
-  }
-  .arc-svg.vis { opacity: 1; }
-  .arc-track    { fill: none; stroke: rgba(0,0,0,.07); stroke-width: 11; }
-  .arc-progress { fill: none; stroke-width: 11; stroke-linecap: round; stroke-dasharray: 565; stroke-dashoffset: 565; transition: stroke .35s ease; }
-
-  /* Active countdown number */
-  .phase-center {
-    position: absolute; z-index: 4;
-    font-size: 50px; font-weight: 600; font-family: 'DM Mono', monospace;
-    color: var(--text); user-select: none;
-    opacity: 0; transition: opacity .5s ease;
-  }
-  .phase-center.vis { opacity: 1; }
-
-  /* ── Watch idle face ── */
-  .watch-idle {
-    position: absolute; top:0; left:0; width:100%; height:100%;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 1; transition: opacity .5s ease; pointer-events: none;
-  }
-  .watch-idle.hidden { opacity: 0; }
-  .watch-bezel { position: absolute; top:0; left:0; width:100%; height:100%; }
+  .watch-face svg { position: absolute; top:0; left:0; width:100%; height:100%; }
   .watch-content {
-    position: relative; z-index: 3;
+    position: relative; z-index: 2;
     display: flex; flex-direction: column; align-items: center; text-align: center;
   }
-  .watch-time {
-    font-family: 'DM Mono', monospace; font-size: 33px; font-weight: 500;
-    color: var(--text); letter-spacing: 3px; line-height: 1; margin-bottom: 3px;
-  }
-  .watch-ampm { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
-  .watch-date { font-size: 9px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .watch-divider { width: 20px; height: 1px; background: var(--accent); opacity: .45; margin: 0 auto 8px; }
-  .watch-quote { font-size: 9.5px; font-weight: 300; color: var(--accent-2); letter-spacing: .04em; line-height: 1.65; font-style: italic; max-width: 100px; }
-
-  .phase-labels { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-  .plabel { padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; color: var(--muted); background: rgba(0,0,0,.04); transition: all .2s; min-width: 72px; text-align: center; }
-  .plabel.ai { background: rgba(38,166,154,.18); color: #0e6b65; }
-  .plabel.ah { background: rgba(229,57,53,.15);  color: #b71c1c; }
-  .plabel.ae { background: rgba(74,144,226,.18); color: #1555a0; }
-  .status-bar { margin-top: 12px; text-align: center; font-size: 13px; color: var(--muted); }
-  .round-ind  { text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 3px; }
-
-  @media(max-width:500px){
-    .loader { width: 170px; height: 170px; }
-    .phase-center { font-size: 38px; }
-    .watch-time { font-size: 26px; }
-  }
+  .watch-time  { font-family: 'DM Mono', monospace; font-size: 36px; font-weight: 500; letter-spacing: 3px; line-height: 1; margin-bottom: 3px; }
+  .watch-ampm  { font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .watch-date  { font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .watch-divider { width: 22px; height: 1px; background: var(--accent); opacity: .4; margin: 0 auto 8px; }
+  .watch-quote { font-size: 10px; font-weight: 300; color: var(--accent-2); letter-spacing: .04em; line-height: 1.6; font-style: italic; }
+  .idle-hint { font-size: 12px; color: var(--muted); }
 </style>
 </head>
 <body>
-<div class="card">
-  <h1>Breathflow Ratios</h1>
-  <div class="subtitle">Click patterns in the order you want — up to all 4, no repeats. Session ends when the last pattern finishes.</div>
+<div class="app">
 
-  <div class="sec-label">Breathing patterns — click to add in sequence</div>
-  <div class="ratio-grid" id="ratioGrid"></div>
-
-  <div class="controls-row">
-    <div class="ctrl">
-      <label for="inhaleInput">Inhale seconds</label>
-      <input type="number" id="inhaleInput" min="1" max="60" value="4"/>
-    </div>
-    <div class="ctrl">
-      <label for="roundsInput">Rounds per pattern</label>
-      <input type="number" id="roundsInput" min="1" max="999" value="2"/>
+  <div class="top-row">
+    <div class="app-title">Breathflow Ratios</div>
+    <div class="time-ctrl">
+      <label for="totalMin">Session</label>
+      <input type="number" id="totalMin" min="1" max="120" value="10" step="1"/>
+      <span>min</span>
     </div>
   </div>
+  <div class="app-sub">Select levels for each phase you want — time is split equally across selected phases.</div>
 
-  <div class="queue-section">
-    <div class="sec-label">Your sequence <span style="font-weight:400;font-size:10px;text-transform:none">(click × to remove)</span></div>
-    <div class="queue-col" id="queueCol">
-      <span class="q-empty" id="qEmpty">No patterns selected — click cards above to build your sequence.</span>
-    </div>
-    <div class="q-total-row" id="totalRow" style="display:none">
-      <span class="q-total-label">Session total</span>
-      <span id="totalTime">00:00</span>
-    </div>
+  <div class="saved-banner" id="savedBanner">
+    <div class="saved-dot"></div>
+    <span id="savedBannerText">Restored your last session settings</span>
+    <button id="clearBtn">Clear saved</button>
   </div>
 
-  <div class="sound-row">
-    <div class="ctrl">
-      <label for="soundSelect">End sound</label>
-      <select id="soundSelect">
-        <option value="builtin_harp">Harp Breeze</option>
-        <option value="builtin_chimes">Wind Chimes</option>
-        <option value="builtin_bowl">Tibetan Bowl</option>
-        <option value="builtin_bell">Soft Bell</option>
-        <option value="builtin_ocean">Ocean Wave</option>
-        <option value="external">External URL</option>
-      </select>
-    </div>
-    <div class="ctrl">
-      <label>External audio URL</label>
-      <input type="text" id="externalUrl" placeholder="Paste direct mp3/wav URL"/>
-    </div>
-    <button class="btn-sm" id="loadBtn">Load</button>
-    <button class="btn-sm" id="findBtn">Free sounds ↗</button>
+  <div class="save-indicator" id="saveInd"></div>
+
+  <div class="phases-grid" id="phasesGrid"></div>
+
+  <div class="session-info">
+    <div class="si-item"><div class="si-label">Session total</div><div class="si-val" id="siTime">—</div></div>
+    <div class="si-item"><div class="si-label">Active phases</div><div class="si-val" id="siCount">0</div></div>
+    <div class="si-phases" id="siPhases"></div>
   </div>
 
-  <div class="buttons">
-    <button class="btn-main btn-start" id="startBtn">Start</button>
-    <button class="btn-main btn-pause" id="pauseBtn" disabled>Pause</button>
-    <button class="btn-main btn-stop"  id="stopBtn"  disabled>Stop</button>
+  <div class="btns">
+    <button class="btn-start" id="startBtn" disabled>Start session</button>
+    <button class="btn-ctrl"  id="pauseBtn" disabled>Pause</button>
+    <button class="btn-ctrl"  id="stopBtn"  disabled>Stop</button>
   </div>
 
-  <div class="loader-wrap">
-    <div class="loader">
-
-      <!-- Active arc -->
-      <svg class="arc-svg" id="arcSvg" viewBox="0 0 200 200">
-        <circle class="arc-track"    cx="100" cy="100" r="90"/>
-        <circle class="arc-progress" cx="100" cy="100" r="90" id="arcEl"/>
+  <!-- Idle watch (shown when not running) -->
+  <div class="watch-wrap" id="watchWrap">
+    <div class="watch-face">
+      <svg id="watchSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(46,139,94,0.12)" stroke-width="1.5"/>
+        <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(46,139,94,0.07)" stroke-width="1"/>
       </svg>
-
-      <!-- Active countdown number -->
-      <div class="phase-center" id="phaseNum"></div>
-
-      <!-- Idle watch face -->
-      <div class="watch-idle" id="watchIdle">
-        <svg class="watch-bezel" id="watchBezelSvg" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="105" cy="105" r="101" fill="none" stroke="rgba(46,139,94,0.13)" stroke-width="1.5"/>
-          <circle cx="105" cy="105" r="91"  fill="none" stroke="rgba(46,139,94,0.07)" stroke-width="1"/>
-        </svg>
-        <div class="watch-content">
-          <div class="watch-time" id="watchTime">--:--</div>
-          <div class="watch-ampm" id="watchAmpm">AM</div>
-          <div class="watch-date" id="watchDate">--- -- ----</div>
-          <div class="watch-divider"></div>
-          <div class="watch-quote">Breathe better.<br>Live better.</div>
-        </div>
+      <div class="watch-content">
+        <div class="watch-time" id="watchTime">--:--</div>
+        <div class="watch-ampm" id="watchAmpm">AM</div>
+        <div class="watch-date" id="watchDate">--- -- ----</div>
+        <div class="watch-divider"></div>
+        <div class="watch-quote">Breathe better.<br>Live better.</div>
       </div>
-
     </div>
-    <div class="phase-labels" id="labelsRow"></div>
-    <div class="round-ind"    id="roundInd"></div>
+    <div class="idle-hint">Select levels above and press Start</div>
   </div>
-  <div class="status-bar" id="statusEl">Ready — build your sequence above and press Start.</div>
+
+  <!-- Active runner (shown when session running) -->
+  <div class="runner" id="runner">
+    <div class="arc-wrap">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(60,100,60,0.1)" stroke-width="11"/>
+        <circle cx="100" cy="100" r="86" fill="none" stroke-width="11" stroke-linecap="round"
+          stroke-dasharray="540" stroke-dashoffset="540" id="arcEl" style="transition:stroke .3s"/>
+      </svg>
+      <div class="arc-num">
+        <div class="arc-count" id="arcCount">—</div>
+        <div class="arc-pname" id="arcPname"></div>
+      </div>
+    </div>
+    <div class="runner-info">
+      <div class="ri-pattern" id="riPattern"></div>
+      <div class="ri-round"   id="riRound"></div>
+      <div class="phase-chips" id="phaseChips"></div>
+      <div class="ri-status"  id="riStatus"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 (() => {
-  const RATIOS = [
-    { id:'1:1',     label:'1 : 1',     name:'Equal Breathing',  desc:'Same duration in & out. Calming and balancing.',          parts:[1,1],     phases:['Inhale','Exhale'] },
-    { id:'1:2:4',   label:'1 : 2 : 4', name:'4-7-8 Style',      desc:'Short in, double hold, long exhale. Deep relaxation.',    parts:[1,2,4],   phases:['Inhale','Hold','Exhale'] },
-    { id:'1:1:1',   label:'1 : 1 : 1', name:'Box Lite',          desc:'Equal in, hold, out. Great for focus.',                   parts:[1,1,1],   phases:['Inhale','Hold','Exhale'] },
-    { id:'1:1:1:1', label:'1:1:1:1',   name:'Box Breathing',     desc:'Equal in, hold, out, hold. Calm under pressure.',         parts:[1,1,1,1], phases:['Inhale','Hold','Exhale','Hold'] },
+  const STORAGE_KEY = 'breathflow_v1';
+
+  const PHASES = [
+    { id:'p1', label:'Phase 1', ratio:'1:1',     name:'Equal Breathing', parts:[1,1],     phases:['Inhale','Exhale'],
+      levels:{ easy:[3,5,8], medium:[10,12,14], hard:[16,20,24] } },
+    { id:'p2', label:'Phase 2', ratio:'1:2:4',   name:'4-7-8 Style',     parts:[1,2,4],   phases:['Inhale','Hold','Exhale'],
+      levels:{ easy:[1,2,3], medium:[4,5,6],   hard:[7,8,9] } },
+    { id:'p3', label:'Phase 3', ratio:'1:1:1',   name:'Box Lite',         parts:[1,1,1],   phases:['Inhale','Hold','Exhale'],
+      levels:{ easy:[3,4,6], medium:[8,10,14], hard:[16,18,20] } },
+    { id:'p4', label:'Phase 4', ratio:'1:1:1:1', name:'Box Breathing',    parts:[1,1,1,1], phases:['Inhale','Hold','Exhale','Hold'],
+      levels:{ easy:[3,4,5], medium:[6,7,8],   hard:[10,11,12] } },
   ];
 
   const $ = id => document.getElementById(id);
-  const ratioGrid   = $('ratioGrid');
-  const inhaleInp   = $('inhaleInput');
-  const roundsInp   = $('roundsInput');
-  const queueCol    = $('queueCol');
-  const qEmpty      = $('qEmpty');
-  const totalRow    = $('totalRow');
-  const totalTime   = $('totalTime');
-  const soundSel    = $('soundSelect');
-  const extUrlInp   = $('externalUrl');
-  const loadBtn     = $('loadBtn');
-  const findBtn     = $('findBtn');
-  const startBtn    = $('startBtn');
-  const pauseBtn    = $('pauseBtn');
-  const stopBtn     = $('stopBtn');
-  const arcSvg      = $('arcSvg');
-  const arcEl       = $('arcEl');
-  const phaseNum    = $('phaseNum');
-  const labelsRow   = $('labelsRow');
-  const roundInd    = $('roundInd');
-  const statusEl    = $('statusEl');
-  const watchIdle   = $('watchIdle');
-  const watchTimeEl = $('watchTime');
-  const watchAmpmEl = $('watchAmpm');
-  const watchDateEl = $('watchDate');
+  const state = {};
+  PHASES.forEach(p => { state[p.id] = { diff: null, sub: null }; });
 
-  const CIRC = 2 * Math.PI * 90;
-  let queue=[], audioCtx=null, extBuffer=null;
-  let sessionList=[], qIdx=0, phaseIdx=0, phaseRem=0;
-  let sesRem=0, ticker=null, isPaused=false;
-  let arcStart=0, arcDur=0, arcFrame=null, arcOn=false;
-  let totalRounds=0, doneRounds=0, clockTick=null;
+  const phaseSecs = (ph, inh) => ph.parts.map(x => Math.round(inh * x / ph.parts[0]));
+  const roundDur  = (ph, inh) => phaseSecs(ph, inh).reduce((a, b) => a + b, 0);
+  const fmtMMSS   = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
+  const getInh    = (ph, d, s) => ph.levels[d][s];
 
-  /* ── Watch clock ── */
-  const DAYS  =['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  function updateClock(){
-    const d=new Date(); let h=d.getHours(),m=d.getMinutes();
-    const ap=h>=12?'PM':'AM'; h=h%12||12;
-    watchTimeEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-    watchAmpmEl.textContent=ap;
-    watchDateEl.textContent=DAYS[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+' '+MONTHS[d.getMonth()];
+  /* ── Storage ── */
+  let saveTimer = null;
+  function saveState() {
+    try {
+      const data = { mins: $('totalMin').value, phases: {} };
+      PHASES.forEach(ph => { data.phases[ph.id] = { diff: state[ph.id].diff, sub: state[ph.id].sub }; });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showSaveInd();
+    } catch(e) {}
+  }
+  function showSaveInd() {
+    const el = $('saveInd');
+    el.textContent = '✓ Saved to this device';
+    el.style.opacity = '1';
+    el.classList.remove('fade');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => el.classList.add('fade'), 2200);
+  }
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      if (data.mins) $('totalMin').value = data.mins;
+      let any = false;
+      PHASES.forEach(ph => {
+        const s = data.phases && data.phases[ph.id];
+        if (s && s.diff !== null && s.sub !== null) {
+          state[ph.id].diff = s.diff;
+          state[ph.id].sub  = s.sub;
+          any = true;
+        }
+      });
+      return any;
+    } catch(e) { return false; }
+  }
+  function clearSaved() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    PHASES.forEach(ph => { state[ph.id].diff = null; state[ph.id].sub = null; });
+    $('savedBanner').classList.remove('show');
+    $('phasesGrid').innerHTML = '';
+    buildCards();
+    updateSummary();
   }
 
-  function drawTicks(){
-    const svg=$('watchBezelSvg'); const cx=105,cy=105,r1=97;
-    for(let i=0;i<60;i++){
-      const a=(i/60)*2*Math.PI-Math.PI/2, isH=i%5===0;
-      const r2=isH?88:91;
-      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1',cx+r1*Math.cos(a)); line.setAttribute('y1',cy+r1*Math.sin(a));
-      line.setAttribute('x2',cx+r2*Math.cos(a)); line.setAttribute('y2',cy+r2*Math.sin(a));
-      line.setAttribute('stroke',isH?'rgba(46,139,94,0.5)':'rgba(60,100,60,0.2)');
-      line.setAttribute('stroke-width',isH?'2':'1');
-      line.setAttribute('stroke-linecap','round');
+  /* ── Watch clock ── */
+  const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function updateClock() {
+    const d = new Date(); let h = d.getHours(), m = d.getMinutes();
+    const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    $('watchTime').textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+    $('watchAmpm').textContent = ap;
+    $('watchDate').textContent = DAYS[d.getDay()] + ' ' + String(d.getDate()).padStart(2,'0') + ' ' + MONTHS[d.getMonth()];
+  }
+  function drawTicks() {
+    const svg = $('watchSvg'), cx = 100, cy = 100, r1 = 93;
+    for (let i = 0; i < 60; i++) {
+      const a = (i/60)*2*Math.PI - Math.PI/2, isH = i % 5 === 0;
+      const r2 = isH ? 84 : 88;
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', cx + r1*Math.cos(a)); line.setAttribute('y1', cy + r1*Math.sin(a));
+      line.setAttribute('x2', cx + r2*Math.cos(a)); line.setAttribute('y2', cy + r2*Math.sin(a));
+      line.setAttribute('stroke', isH ? 'rgba(46,139,94,0.45)' : 'rgba(60,100,60,0.18)');
+      line.setAttribute('stroke-width', isH ? '2' : '1');
+      line.setAttribute('stroke-linecap', 'round');
       svg.appendChild(line);
     }
   }
+  let clockInt = null;
+  function startClock() { updateClock(); clockInt = setInterval(updateClock, 10000); }
+  function stopClock()  { clearInterval(clockInt); clockInt = null; }
 
-  function showIdle(){
-    watchIdle.classList.remove('hidden');
-    arcSvg.classList.remove('vis');
-    phaseNum.classList.remove('vis');
-    phaseNum.textContent='';
-    updateClock();
-    if(clockTick) clearInterval(clockTick);
-    clockTick=setInterval(updateClock,10000);
-  }
-  function hideIdle(){
-    watchIdle.classList.add('hidden');
-    arcSvg.classList.add('vis');
-    phaseNum.classList.add('vis');
-    if(clockTick){clearInterval(clockTick);clockTick=null;}
-  }
-
-  /* ── Helpers ── */
-  const getInhale=()=>Math.max(1,parseInt(inhaleInp.value)||4);
-  const getRounds=()=>Math.max(1,parseInt(roundsInp.value)||2);
-  const fmtMMSS=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
-  const phaseSecs=(r,inh)=>r.parts.map(p=>Math.round(inh*p/r.parts[0]));
-
-  /* ── Cards ── */
-  function buildCards(){
-    ratioGrid.innerHTML='';
-    RATIOS.forEach(r=>{
-      const c=document.createElement('div');
-      c.className='rcard'; c.dataset.id=r.id;
-      c.innerHTML=`<div class="rlabel">${r.label}</div><div class="rdesc">${r.desc}</div><div class="rpills">${r.phases.map(p=>`<span class="pill ${p==='Inhale'?'pi':p==='Hold'?'ph':'pe'}">${p}</span>`).join('')}</div>`;
-      c.addEventListener('click',()=>addToQueue(r.id));
-      ratioGrid.appendChild(c);
+  /* ── Build phase cards ── */
+  function buildCards() {
+    const grid = $('phasesGrid');
+    PHASES.forEach(ph => {
+      const card = document.createElement('div');
+      card.className = 'phase-card'; card.id = 'card_' + ph.id;
+      card.innerHTML = `
+        <div class="phase-header">
+          <div class="phase-num">${ph.id.slice(1)}</div>
+          <div>
+            <div class="phase-title">${ph.label} — ${ph.ratio}</div>
+            <div class="phase-sub">${ph.name}</div>
+          </div>
+        </div>
+        <div class="diff-row">
+          <div class="diff-btn easy"   data-ph="${ph.id}" data-d="easy">Easy</div>
+          <div class="diff-btn medium" data-ph="${ph.id}" data-d="medium">Medium</div>
+          <div class="diff-btn hard"   data-ph="${ph.id}" data-d="hard">Hard</div>
+        </div>
+        <div class="sub-levels" id="sub_${ph.id}">
+          <div class="sub-btn" data-ph="${ph.id}" data-s="0">L1</div>
+          <div class="sub-btn" data-ph="${ph.id}" data-s="1">L2</div>
+          <div class="sub-btn" data-ph="${ph.id}" data-s="2">L3</div>
+        </div>
+        <div class="level-preview" id="prev_${ph.id}">Select a difficulty to configure this phase</div>
+      `;
+      grid.appendChild(card);
     });
-  }
 
-  /* ── FIX: iterate over queue directly instead of RATIOS ── */
-  function refreshCardStyles(){
-    // Clear all badges and states first in one clean pass
-    ratioGrid.querySelectorAll('.queue-badge').forEach(b=>b.remove());
-    ratioGrid.querySelectorAll('.rcard').forEach(el=>el.classList.remove('in-queue'));
-    // Re-apply based on queue order
-    queue.forEach((id,pos)=>{
-      const el=ratioGrid.querySelector(`[data-id="${id}"]`); if(!el)return;
-      el.classList.add('in-queue');
-      const b=document.createElement('div'); b.className='queue-badge'; b.textContent=pos+1;
-      el.appendChild(b);
-    });
-  }
-
-  function addToQueue(id){
-    if(queue.includes(id)||queue.length>=4)return;
-    queue.push(id); refreshCardStyles(); renderQueue();
-  }
-
-  /* ── Queue ── */
-  function renderQueue(){
-    Array.from(queueCol.querySelectorAll('.q-item')).forEach(el=>el.remove());
-    if(!queue.length){qEmpty.style.display='';totalRow.style.display='none';return;}
-    qEmpty.style.display='none';
-    const inh=getInhale(),rounds=getRounds(); let grand=0;
-    queue.forEach((id,idx)=>{
-      const r=RATIOS.find(x=>x.id===id);
-      const secs=phaseSecs(r,inh);
-      const patSec=secs.reduce((a,b)=>a+b,0)*rounds; grand+=patSec;
-      const item=document.createElement('div'); item.className='q-item';
-      const nb=document.createElement('div'); nb.className='q-num-block'; nb.textContent=idx+1;
-      item.appendChild(nb);
-      const body=document.createElement('div'); body.className='q-body';
-      const rl=document.createElement('span'); rl.className='q-ratio-label'; rl.textContent=r.label;
-      body.appendChild(rl);
-      const pw=document.createElement('div'); pw.className='q-phases';
-      r.phases.forEach((p,i)=>{
-        if(i>0){const s=document.createElement('span');s.className='qchip-sep';s.textContent='→';pw.appendChild(s);}
-        const ch=document.createElement('span');
-        ch.className='qphase-chip '+(p==='Inhale'?'qchip-i':p==='Hold'?'qchip-h':'qchip-e');
-        ch.textContent=(p==='Inhale'?'in':p==='Hold'?'hold':'out')+' '+secs[i]+'s';
-        pw.appendChild(ch);
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.dataset.ph, d = btn.dataset.d;
+        state[pid].diff = d; state[pid].sub = null;
+        document.querySelectorAll(`[data-ph="${pid}"].diff-btn`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const subRow = $('sub_' + pid);
+        subRow.classList.add('open');
+        const ph = PHASES.find(x => x.id === pid);
+        subRow.querySelectorAll('.sub-btn').forEach((sb, i) => {
+          sb.classList.remove('active');
+          const inh = ph.levels[d][i];
+          sb.textContent = `L${i+1}: ${inh}s`;
+          sb.title = phaseSecs(ph, inh).map((s, j) => ph.phases[j] + ' ' + s + 's').join(' → ');
+        });
+        $('prev_' + pid).innerHTML = 'Pick a sub-level below';
+        $('card_' + pid).classList.remove('selected');
+        saveState(); updateSummary();
       });
-      body.appendChild(pw);
-      const te=document.createElement('span'); te.className='q-time'; te.textContent=fmtMMSS(patSec);
-      body.appendChild(te);
-      item.appendChild(body);
-      const rm=document.createElement('div'); rm.className='q-remove'; rm.textContent='×'; rm.title='Remove';
-      rm.addEventListener('click',()=>{queue.splice(idx,1);refreshCardStyles();renderQueue();});
-      item.appendChild(rm);
-      queueCol.appendChild(item);
     });
-    totalTime.textContent=fmtMMSS(grand); totalRow.style.display='flex';
+
+    document.querySelectorAll('.sub-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.dataset.ph, s = parseInt(btn.dataset.s);
+        state[pid].sub = s;
+        document.querySelectorAll(`[data-ph="${pid}"].sub-btn`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const ph = PHASES.find(x => x.id === pid);
+        const d  = state[pid].diff;
+        const inh = getInh(ph, d, s);
+        const secs = phaseSecs(ph, inh);
+        $('prev_' + pid).innerHTML = secs.map((sec, i) => `<span>${ph.phases[i]}</span> ${sec}s`).join(' · ');
+        $('card_' + pid).classList.add('selected');
+        saveState(); updateSummary();
+      });
+    });
+  }
+
+  function applyRestoredToUI() {
+    PHASES.forEach(ph => {
+      const d = state[ph.id].diff, s = state[ph.id].sub;
+      if (d === null || s === null) return;
+      document.querySelectorAll(`[data-ph="${ph.id}"].diff-btn`).forEach(b => {
+        b.classList.remove('active');
+        if (b.dataset.d === d) b.classList.add('active');
+      });
+      const subRow = $('sub_' + ph.id);
+      subRow.classList.add('open');
+      subRow.querySelectorAll('.sub-btn').forEach((sb, i) => {
+        sb.classList.remove('active');
+        const inh = ph.levels[d][i];
+        sb.textContent = `L${i+1}: ${inh}s`;
+        if (i === s) sb.classList.add('active');
+      });
+      const inh  = getInh(ph, d, s);
+      const secs = phaseSecs(ph, inh);
+      $('prev_' + ph.id).innerHTML = secs.map((sec, i) => `<span>${ph.phases[i]}</span> ${sec}s`).join(' · ');
+      $('card_' + ph.id).classList.add('selected');
+    });
+  }
+
+  /* ── Summary bar ── */
+  function updateSummary() {
+    const active = PHASES.filter(ph => state[ph.id].diff !== null && state[ph.id].sub !== null);
+    $('siCount').textContent = active.length;
+    const pills = $('siPhases'); pills.innerHTML = '';
+    const totalSec = parseInt($('totalMin').value || 10) * 60;
+    if (!active.length) { $('siTime').textContent = '—'; $('startBtn').disabled = true; return; }
+    const perPhase = Math.floor(totalSec / active.length);
+    let grand = 0;
+    active.forEach(ph => {
+      const d = state[ph.id].diff, s = state[ph.id].sub;
+      const inh    = getInh(ph, d, s);
+      const rd     = roundDur(ph, inh);
+      const rounds = Math.max(1, Math.round(perPhase / rd));
+      grand += rounds * rd;
+      const pill = document.createElement('div'); pill.className = 'phase-pill';
+      pill.textContent = `${ph.ratio} × ${rounds}r`;
+      pills.appendChild(pill);
+    });
+    $('siTime').textContent = fmtMMSS(grand);
+    $('startBtn').disabled = false;
   }
 
   /* ── Audio ── */
-  function ensureCtx(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();}if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});}
-  function playBeep(pn){
-    try{
-      ensureCtx(); const ctx=audioCtx,now=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain(),n=pn.toLowerCase();
-      o.type=n.includes('inhale')?'sine':n.includes('hold')?'triangle':'sine';
-      o.frequency.value=n.includes('inhale')?660:n.includes('hold')?980:440;
-      g.gain.setValueAtTime(0.0001,now);g.gain.exponentialRampToValueAtTime(0.28,now+0.01);g.gain.exponentialRampToValueAtTime(0.0001,now+0.20);
-      o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+0.22);
-    }catch(e){}
+  let audioCtx = null;
+  function ensureCtx() {
+    if (!audioCtx) { const AC = window.AudioContext || window.webkitAudioContext; audioCtx = new AC(); }
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  }
+  function beep(pn) {
+    try {
+      ensureCtx(); const c = audioCtx, n = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      const nm = (pn || '').toLowerCase();
+      o.type = nm.includes('inhale') ? 'sine' : nm.includes('hold') ? 'triangle' : 'sine';
+      o.frequency.value = nm.includes('inhale') ? 660 : nm.includes('hold') ? 980 : 440;
+      g.gain.setValueAtTime(.0001, n); g.gain.exponentialRampToValueAtTime(.28, n+.01); g.gain.exponentialRampToValueAtTime(.0001, n+.22);
+      o.connect(g); g.connect(c.destination); o.start(n); o.stop(n+.24);
+    } catch(e) {}
+  }
+  function playEnd() {
+    try {
+      ensureCtx(); const c = audioCtx, n = c.currentTime, m = c.createGain();
+      m.gain.setValueAtTime(.0001, n); m.gain.exponentialRampToValueAtTime(.6, n+.02); m.gain.exponentialRampToValueAtTime(.0001, n+4.5);
+      m.connect(c.destination);
+      [440,550,660,880].forEach((f, i) => {
+        const t = n + i*.2, o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.55, t+.01); g.gain.exponentialRampToValueAtTime(.0001, t+1.8);
+        o.connect(g); g.connect(m); o.start(t); o.stop(t+1.8);
+      });
+    } catch(e) {}
   }
 
-  /* ── Arc ── */
-  const arcColor=p=>{const n=(p||'').toLowerCase();return n.includes('inhale')?'#26a69a':n.includes('hold')?'#e53935':'#4a90e2';};
-  function startArc(dur,pn){
-    cancelAnimationFrame(arcFrame); arcEl.style.stroke=arcColor(pn);
-    if((pn||'').toLowerCase().includes('hold')){arcOn=false;arcEl.style.strokeDashoffset='0';return;}
-    arcOn=true;arcStart=performance.now();arcDur=dur*1000;
-    const run=now=>{if(!arcOn)return;const p=Math.min((now-arcStart)/arcDur,1);arcEl.style.strokeDashoffset=CIRC*(1-p);if(p<1)arcFrame=requestAnimationFrame(run);};
-    arcFrame=requestAnimationFrame(run);
+  /* ── Arc animation ── */
+  const CIRC = 2 * Math.PI * 86;
+  let arcFrame = null, arcStart = 0, arcDur = 0, arcOn = false;
+  const arcColor = pn => { const n = (pn||'').toLowerCase(); return n.includes('inhale') ? '#1D9E75' : n.includes('hold') ? '#D85A30' : '#378ADD'; };
+  function startArc(dur, pn) {
+    cancelAnimationFrame(arcFrame);
+    $('arcEl').style.stroke = arcColor(pn);
+    if ((pn||'').toLowerCase().includes('hold')) { arcOn = false; $('arcEl').style.strokeDashoffset = '0'; return; }
+    arcOn = true; arcStart = performance.now(); arcDur = dur * 1000;
+    const el = $('arcEl');
+    const run = now => { if (!arcOn) return; const p = Math.min((now-arcStart)/arcDur, 1); el.style.strokeDashoffset = CIRC*(1-p); if (p < 1) arcFrame = requestAnimationFrame(run); };
+    arcFrame = requestAnimationFrame(run);
   }
-  function pauseArc(){arcOn=false;cancelAnimationFrame(arcFrame);}
-  function resumeArc(rem,pn){
-    if((pn||'').toLowerCase().includes('hold'))return;
-    arcOn=true;arcStart=performance.now()-(arcDur-rem*1000);
-    const run=now=>{if(!arcOn)return;const p=Math.min((now-arcStart)/arcDur,1);arcEl.style.strokeDashoffset=CIRC*(1-p);if(p<1)arcFrame=requestAnimationFrame(run);};
-    arcFrame=requestAnimationFrame(run);
-  }
-  function resetArc(){arcOn=false;cancelAnimationFrame(arcFrame);arcEl.style.strokeDashoffset=CIRC;arcEl.style.stroke='#26a69a';}
+  function resetArc() { arcOn = false; cancelAnimationFrame(arcFrame); $('arcEl').style.strokeDashoffset = CIRC; $('arcEl').style.stroke = '#1D9E75'; }
 
-  /* ── Labels ── */
-  function buildLabels(phases){labelsRow.innerHTML='';phases.forEach((p,i)=>{const el=document.createElement('div');el.className='plabel';el.id='pl'+i;el.textContent=p;labelsRow.appendChild(el);});}
-  function setActive(idx,phases){phases.forEach((p,i)=>{const el=$('pl'+i);if(!el)return;el.className='plabel';if(i===idx){const n=p.toLowerCase();el.classList.add(n.includes('inhale')?'ai':n.includes('hold')?'ah':'ae');}});}
+  /* ── Phase chip labels ── */
+  function buildChips(phases, activeIdx) {
+    const row = $('phaseChips'); row.innerHTML = '';
+    phases.forEach((p, i) => {
+      const n = p.toLowerCase();
+      const base = n.includes('inhale') ? 'ci' : n.includes('hold') ? 'ch' : 'ce';
+      const ch = document.createElement('div');
+      ch.className = 'pchip ' + (i === activeIdx ? 'active-' + base : base);
+      ch.textContent = p;
+      row.appendChild(ch);
+    });
+  }
 
   /* ── Session engine ── */
-  const entry=()=>sessionList[qIdx];
-  function startPhase(idx){const e=entry();phaseIdx=idx;const dur=e.seconds[idx];phaseRem=dur;phaseNum.textContent=String(dur);setActive(idx,e.phases);playBeep(e.phases[idx]);startArc(dur,e.phases[idx]);}
-  function tick(){
-    if(isPaused)return;
-    sesRem=Math.max(0,sesRem-1);phaseRem--;
-    if(phaseRem>0){phaseNum.textContent=String(phaseRem);return;}
-    const e=entry(),nextPhase=(phaseIdx+1)%e.phases.length;
-    if(nextPhase===0){
-      e.roundsDone++;doneRounds++;
-      roundInd.textContent=`Round ${doneRounds} / ${totalRounds}`;
-      if(e.roundsDone>=e.roundsTotal){
-        try{playSelectedEndSound();}catch(err){}
+  let sessionList = [], qIdx = 0, phaseIdx = 0, phaseRem = 0;
+  let ticker = null, isPaused = false;
+
+  const entry = () => sessionList[qIdx];
+
+  function startPhase(idx) {
+    const e = entry(); phaseIdx = idx;
+    const dur = e.seconds[idx]; phaseRem = dur;
+    $('arcCount').textContent = String(dur);
+    $('arcPname').textContent = e.phases[idx];
+    buildChips(e.phases, idx);
+    beep(e.phases[idx]);
+    startArc(dur, e.phases[idx]);
+  }
+
+  function tick() {
+    if (isPaused) return;
+    phaseRem--;
+    if (phaseRem > 0) { $('arcCount').textContent = String(phaseRem); return; }
+    const e = entry(), next = (phaseIdx + 1) % e.phases.length;
+    if (next === 0) {
+      e.roundsDone++;
+      $('riRound').textContent = `Round ${e.roundsDone} / ${e.roundsTotal}`;
+      if (e.roundsDone >= e.roundsTotal) {
         qIdx++;
-        if(qIdx>=sessionList.length){endSession();return;}
-        buildLabels(entry().phases);
-        statusEl.textContent=`Pattern ${qIdx+1}/${sessionList.length}: ${entry().ratio.name}`;
-        startPhase(0);return;
+        if (qIdx >= sessionList.length) { endSession(); return; }
+        const ne = entry();
+        $('riPattern').textContent = `${ne.ph.ratio} — ${ne.ph.name}`;
+        $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
+        $('riStatus').textContent  = `Phase ${qIdx+1} of ${sessionList.length}`;
+        startPhase(0); return;
       }
     }
-    startPhase(nextPhase);
+    startPhase(next);
   }
 
-  function startSession(){
+  function startSession() {
     ensureCtx();
-    const inh=getInhale(),rounds=getRounds(),list=queue.length?queue:[RATIOS[0].id];
-    sessionList=list.map(id=>{const r=RATIOS.find(x=>x.id===id);return{ratio:r,phases:r.phases,seconds:phaseSecs(r,inh),roundsTotal:rounds,roundsDone:0};});
-    qIdx=0;phaseIdx=0;doneRounds=0;
-    totalRounds=sessionList.reduce((a,e)=>a+e.roundsTotal,0);
-    sesRem=sessionList.reduce((t,e)=>t+e.seconds.reduce((a,b)=>a+b,0)*e.roundsTotal,0);
-    hideIdle();
-    buildLabels(entry().phases);
-    statusEl.textContent=`Running — Pattern 1/${sessionList.length}: ${entry().ratio.name}`;
-    roundInd.textContent=`Round 1 / ${totalRounds}`;
+    const totalSec = parseInt($('totalMin').value || 10) * 60;
+    const active   = PHASES.filter(ph => state[ph.id].diff !== null && state[ph.id].sub !== null);
+    const perPhase = Math.floor(totalSec / active.length);
+    sessionList = active.map(ph => {
+      const d = state[ph.id].diff, s = state[ph.id].sub;
+      const inh    = getInh(ph, d, s);
+      const rd     = roundDur(ph, inh);
+      const rounds = Math.max(1, Math.round(perPhase / rd));
+      return { ph, phases: ph.phases, seconds: phaseSecs(ph, inh), roundsTotal: rounds, roundsDone: 0 };
+    });
+    qIdx = 0;
+    const e = entry();
+    $('riPattern').textContent = `${e.ph.ratio} — ${e.ph.name}`;
+    $('riRound').textContent   = `Round 1 / ${e.roundsTotal}`;
+    $('riStatus').textContent  = `Phase 1 of ${sessionList.length}`;
+    $('watchWrap').style.display = 'none'; stopClock();
+    $('runner').classList.add('on');
     startPhase(0);
-    clearInterval(ticker);isPaused=false;ticker=setInterval(tick,1000);
-    startBtn.disabled=true;pauseBtn.disabled=false;stopBtn.disabled=false;pauseBtn.textContent='Pause';
+    clearInterval(ticker); isPaused = false; ticker = setInterval(tick, 1000);
+    $('startBtn').disabled = true;
+    $('pauseBtn').disabled = false;
+    $('stopBtn').disabled  = false;
+    $('pauseBtn').textContent = 'Pause';
+    saveState();
   }
 
-  function togglePause(){
-    if(!ticker)return;
-    if(!isPaused){isPaused=true;pauseBtn.textContent='Resume';pauseArc();statusEl.textContent='Paused';}
-    else{isPaused=false;pauseBtn.textContent='Pause';playBeep(entry().phases[phaseIdx]);resumeArc(phaseRem,entry().phases[phaseIdx]);statusEl.textContent='Running';}
+  function togglePause() {
+    if (!ticker) return;
+    if (!isPaused) {
+      isPaused = true; arcOn = false; cancelAnimationFrame(arcFrame);
+      $('pauseBtn').textContent = 'Resume';
+      $('riStatus').textContent = 'Paused';
+    } else {
+      isPaused = false;
+      $('pauseBtn').textContent = 'Pause';
+      beep(entry().phases[phaseIdx]);
+      const e = entry();
+      if (!(e.phases[phaseIdx]||'').toLowerCase().includes('hold')) {
+        arcOn = true; arcStart = performance.now() - (arcDur - phaseRem * 1000);
+        const el = $('arcEl');
+        const run = now => { if (!arcOn) return; const p = Math.min((now-arcStart)/arcDur, 1); el.style.strokeDashoffset = CIRC*(1-p); if (p<1) arcFrame = requestAnimationFrame(run); };
+        arcFrame = requestAnimationFrame(run);
+      }
+      $('riStatus').textContent = 'Running';
+    }
   }
 
-  function stopSession(){
-    clearInterval(ticker);ticker=null;resetArc();labelsRow.innerHTML='';roundInd.textContent='';
-    statusEl.textContent='Stopped — press Start to begin again.';
-    startBtn.disabled=false;pauseBtn.disabled=true;stopBtn.disabled=true;pauseBtn.textContent='Pause';isPaused=false;
-    if(audioCtx){audioCtx.close().catch(()=>{});audioCtx=null;}
-    showIdle();
+  function stopSession() {
+    clearInterval(ticker); ticker = null; resetArc(); isPaused = false;
+    $('runner').classList.remove('on');
+    $('watchWrap').style.display = ''; startClock();
+    $('startBtn').disabled = false;
+    $('pauseBtn').disabled = true; $('stopBtn').disabled = true;
+    $('pauseBtn').textContent = 'Pause';
+    if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
   }
 
-  function endSession(){
-    clearInterval(ticker);ticker=null;resetArc();labelsRow.innerHTML='';roundInd.textContent='';
-    statusEl.textContent='Session complete — well done!';
-    startBtn.disabled=false;pauseBtn.disabled=true;stopBtn.disabled=true;pauseBtn.textContent='Pause';isPaused=false;
-    try{playSelectedEndSound();}catch(e){}
-    setTimeout(()=>{if(audioCtx){audioCtx.close().catch(()=>{});audioCtx=null;}},12000);
-    showIdle();
+  function endSession() {
+    clearInterval(ticker); ticker = null; resetArc(); isPaused = false;
+    playEnd();
+    $('arcCount').textContent = '✓';
+    $('arcPname').textContent = 'Done!';
+    $('riStatus').textContent = 'Session complete — well done!';
+    $('phaseChips').innerHTML = '';
+    setTimeout(() => {
+      $('runner').classList.remove('on');
+      $('watchWrap').style.display = ''; startClock();
+      $('startBtn').disabled = false;
+      $('pauseBtn').disabled = true; $('stopBtn').disabled = true;
+      if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
+    }, 5000);
   }
 
-  /* ── End sounds ── */
-  function playSelectedEndSound(){ensureCtx();const s=soundSel.value;if(s==='external'&&extBuffer){playExtBuf();return;}if(s==='builtin_chimes')playChimes();else if(s==='builtin_bowl')playBowl();else if(s==='builtin_bell')playBell();else if(s==='builtin_ocean')playOcean();else playHarp();}
-  function playHarp(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.6,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4);m.connect(c.destination);[440,550,660,880].forEach((f,i)=>{const t=n+i*.18,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.6,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.6);o.connect(g);g.connect(m);o.start(t);o.stop(t+1.6);});}
-  function playChimes(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.75,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4.5);m.connect(c.destination);[660,880,990,1320].forEach((f,i)=>{const t=n+i*.25,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.8,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+3.2);o.connect(g);g.connect(m);o.start(t);o.stop(t+3.2);});}
-  function playBowl(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.85,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+4.8);m.connect(c.destination);const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=220;g.gain.setValueAtTime(.8,n);o.connect(g);g.connect(m);o.start(n);o.stop(n+4.8);}
-  function playBell(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.8,n+.02);m.gain.exponentialRampToValueAtTime(.0001,n+3.8);m.connect(c.destination);[880,1320,1760].forEach((f,i)=>{const t=n+i*.05,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.6/(i+1),t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+3.8);o.connect(g);g.connect(m);o.start(t);o.stop(t+3.8);});}
-  function playOcean(){const c=audioCtx,n=c.currentTime,m=c.createGain();m.gain.setValueAtTime(.0001,n);m.gain.exponentialRampToValueAtTime(.85,n+.04);m.gain.exponentialRampToValueAtTime(.0001,n+4.8);m.connect(c.destination);const buf=c.createBuffer(1,c.sampleRate*1.2,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*.2));const s=c.createBufferSource(),lp=c.createBiquadFilter();s.buffer=buf;lp.type='lowpass';lp.frequency.value=1200;s.connect(lp);lp.connect(m);s.start(n);s.stop(n+4.8);}
-  function playExtBuf(){const c=audioCtx,n=c.currentTime,s=c.createBufferSource(),g=c.createGain();s.buffer=extBuffer;g.gain.setValueAtTime(1,n);s.connect(g);g.connect(c.destination);s.start(n);s.stop(n+10);}
-  async function loadExtAudio(url){try{ensureCtx();statusEl.textContent='Loading external sound…';const r=await fetch(url,{mode:'cors'});if(!r.ok)throw new Error('HTTP '+r.status);extBuffer=await audioCtx.decodeAudioData(await r.arrayBuffer());soundSel.value='external';statusEl.textContent='External sound loaded.';}catch(e){statusEl.textContent='Failed to load audio (check URL/CORS.';}}
-
-  /* ── Wire up ── */
-  startBtn.addEventListener('click',startSession);
-  pauseBtn.addEventListener('click',togglePause);
-  stopBtn.addEventListener('click',stopSession);
-  inhaleInp.addEventListener('input',renderQueue);
-  roundsInp.addEventListener('input',renderQueue);
-  loadBtn.addEventListener('click',()=>{const u=extUrlInp.value.trim();if(u)loadExtAudio(u);});
-  findBtn.addEventListener('click',()=>{window.open('https://freesound.org','_blank');window.open('https://pixabay.com/sound-effects/','_blank');});
-  inhaleInp.addEventListener('keydown',e=>{if(e.key==='Enter')startSession();});
-  roundsInp.addEventListener('keydown',e=>{if(e.key==='Enter')startSession();});
+  /* ── Wire events ── */
+  $('startBtn').addEventListener('click', startSession);
+  $('pauseBtn').addEventListener('click', togglePause);
+  $('stopBtn').addEventListener('click',  stopSession);
+  $('totalMin').addEventListener('input', () => { saveState(); updateSummary(); });
+  $('clearBtn').addEventListener('click', clearSaved);
 
   /* ── Init ── */
-  buildCards(); renderQueue(); drawTicks(); resetArc(); showIdle();
+  buildCards();
+  drawTicks(); startClock();
+  const wasRestored = loadState();
+  if (wasRestored) {
+    applyRestoredToUI();
+    $('savedBanner').classList.add('show');
+  }
+  updateSummary();
 })();
 </script>
 </body>
