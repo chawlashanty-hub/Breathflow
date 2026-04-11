@@ -94,7 +94,7 @@
   .phase-title { font-size: 14px; font-weight: 600; }
   .phase-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-  /* Difficulty buttons */
+  /* ── Difficulty buttons ── */
   .diff-row { display: flex; gap: 6px; margin-bottom: 8px; }
   .diff-btn {
     flex: 1; padding: 7px 4px; font-size: 12px; font-weight: 600;
@@ -104,11 +104,11 @@
     font-family: 'DM Sans', sans-serif;
   }
   .diff-btn:hover { border-color: var(--accent); color: var(--accent-2); }
-  .diff-btn.active.easy  { background: var(--accent-light); border-color: #5DCAA5; color: var(--accent-2); }
-  .diff-btn.active.medium{ background: var(--amber-bg);    border-color: var(--amber-border); color: var(--amber-text); }
-  .diff-btn.active.hard  { background: var(--red-bg);      border-color: var(--red-border);   color: var(--red-text); }
+  .diff-btn.active.easy   { background: var(--accent-light); border-color: #5DCAA5; color: var(--accent-2); }
+  .diff-btn.active.medium { background: var(--amber-bg);     border-color: var(--amber-border); color: var(--amber-text); }
+  .diff-btn.active.hard   { background: var(--red-bg);       border-color: var(--red-border);   color: var(--red-text); }
 
-  /* Sub-level buttons */
+  /* ── Sub-level buttons ── */
   .sub-levels { display: none; gap: 5px; margin-bottom: 8px; }
   .sub-levels.open { display: flex; }
   .sub-btn {
@@ -180,8 +180,8 @@
   .pchip.ci { background: var(--accent-light); color: var(--accent-2); }
   .pchip.ch { background: var(--red-bg);       color: var(--red-text); }
   .pchip.ce { background: var(--blue-bg);      color: var(--blue-text); }
-  .pchip.active-ci { background: var(--accent);    color: #fff; }
-  .pchip.active-ch { background: var(--red-border); color: #fff; }
+  .pchip.active-ci { background: var(--accent);     color: #fff; }
+  .pchip.active-ch { background: var(--red-border);  color: #fff; }
   .pchip.active-ce { background: var(--blue-active); color: #fff; }
 
   /* ── Idle watch ── */
@@ -198,12 +198,12 @@
     position: relative; z-index: 2;
     display: flex; flex-direction: column; align-items: center; text-align: center;
   }
-  .watch-time  { font-family: 'DM Mono', monospace; font-size: 36px; font-weight: 500; letter-spacing: 3px; line-height: 1; margin-bottom: 3px; }
-  .watch-ampm  { font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
-  .watch-date  { font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .watch-time   { font-family: 'DM Mono', monospace; font-size: 36px; font-weight: 500; letter-spacing: 3px; line-height: 1; margin-bottom: 3px; }
+  .watch-ampm   { font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .watch-date   { font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
   .watch-divider { width: 22px; height: 1px; background: var(--accent); opacity: .4; margin: 0 auto 8px; }
-  .watch-quote { font-size: 10px; font-weight: 300; color: var(--accent-2); letter-spacing: .04em; line-height: 1.6; font-style: italic; }
-  .idle-hint { font-size: 12px; color: var(--muted); }
+  .watch-quote  { font-size: 10px; font-weight: 300; color: var(--accent-2); letter-spacing: .04em; line-height: 1.6; font-style: italic; }
+  .idle-hint    { font-size: 12px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -280,42 +280,68 @@
     </div>
   </div>
 
-</div>
+</div><!-- /.app -->
 
 <script>
 (() => {
+  'use strict';
+
   const STORAGE_KEY = 'breathflow_v1';
 
+  /*
+   * PHASES
+   * - Phase 1 keeps its subtitle "Equal Breathing"
+   * - Phases 2, 3, 4 have no subtitle (name: '')
+   */
   const PHASES = [
-    { id:'p1', label:'Phase 1', ratio:'1:1',     name:'Equal Breathing', parts:[1,1],     phases:['Inhale','Exhale'],
-      levels:{ easy:[3,5,8], medium:[10,12,14], hard:[16,20,24] } },
-    { id:'p2', label:'Phase 2', ratio:'1:2:4',   name:'4-7-8 Style',     parts:[1,2,4],   phases:['Inhale','Hold','Exhale'],
-      levels:{ easy:[1,2,3], medium:[4,5,6],   hard:[7,8,9] } },
-    { id:'p3', label:'Phase 3', ratio:'1:1:1',   name:'Box Lite',         parts:[1,1,1],   phases:['Inhale','Hold','Exhale'],
-      levels:{ easy:[3,4,6], medium:[8,10,14], hard:[16,18,20] } },
-    { id:'p4', label:'Phase 4', ratio:'1:1:1:1', name:'Box Breathing',    parts:[1,1,1,1], phases:['Inhale','Hold','Exhale','Hold'],
-      levels:{ easy:[3,4,5], medium:[6,7,8],   hard:[10,11,12] } },
+    {
+      id: 'p1', label: 'Phase 1', ratio: '1:1', name: 'Equal Breathing',
+      parts: [1, 1], phases: ['Inhale', 'Exhale'],
+      levels: { easy: [3, 5, 8], medium: [10, 12, 14], hard: [16, 20, 24] }
+    },
+    {
+      id: 'p2', label: 'Phase 2', ratio: '1:2:4', name: '',
+      parts: [1, 2, 4], phases: ['Inhale', 'Hold', 'Exhale'],
+      levels: { easy: [1, 2, 3], medium: [4, 5, 6], hard: [7, 8, 9] }
+    },
+    {
+      id: 'p3', label: 'Phase 3', ratio: '1:1:1', name: '',
+      parts: [1, 1, 1], phases: ['Inhale', 'Hold', 'Exhale'],
+      levels: { easy: [3, 4, 6], medium: [8, 10, 14], hard: [16, 18, 20] }
+    },
+    {
+      id: 'p4', label: 'Phase 4', ratio: '1:1:1:1', name: '',
+      parts: [1, 1, 1, 1], phases: ['Inhale', 'Hold', 'Exhale', 'Hold'],
+      levels: { easy: [3, 4, 5], medium: [6, 7, 8], hard: [10, 11, 12] }
+    },
   ];
 
+  /* ── Helpers ── */
   const $ = id => document.getElementById(id);
+  const phaseSecs = (ph, inh) => ph.parts.map(x => Math.round(inh * x / ph.parts[0]));
+  const roundDur  = (ph, inh) => phaseSecs(ph, inh).reduce((a, b) => a + b, 0);
+  const fmtMMSS   = s => {
+    s = Math.max(0, Math.floor(s));
+    return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  };
+  const getInh = (ph, d, s) => ph.levels[d][s];
+
+  /* ── UI state ── */
   const state = {};
   PHASES.forEach(p => { state[p.id] = { diff: null, sub: null }; });
 
-  const phaseSecs = (ph, inh) => ph.parts.map(x => Math.round(inh * x / ph.parts[0]));
-  const roundDur  = (ph, inh) => phaseSecs(ph, inh).reduce((a, b) => a + b, 0);
-  const fmtMMSS   = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
-  const getInh    = (ph, d, s) => ph.levels[d][s];
-
-  /* ── Storage ── */
+  /* ── LocalStorage ── */
   let saveTimer = null;
+
   function saveState() {
     try {
       const data = { mins: $('totalMin').value, phases: {} };
       PHASES.forEach(ph => { data.phases[ph.id] = { diff: state[ph.id].diff, sub: state[ph.id].sub }; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       showSaveInd();
-    } catch(e) {}
+    } catch (e) {}
   }
+
   function showSaveInd() {
     const el = $('saveInd');
     el.textContent = '✓ Saved to this device';
@@ -324,6 +350,7 @@
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => el.classList.add('fade'), 2200);
   }
+
   function loadState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -340,10 +367,11 @@
         }
       });
       return any;
-    } catch(e) { return false; }
+    } catch (e) { return false; }
   }
+
   function clearSaved() {
-    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     PHASES.forEach(ph => { state[ph.id].diff = null; state[ph.id].sub = null; });
     $('savedBanner').classList.remove('show');
     $('phasesGrid').innerHTML = '';
@@ -351,30 +379,33 @@
     updateSummary();
   }
 
-  /* ── Watch clock ── */
-  const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  /* ── Clock ── */
+  const DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   function updateClock() {
     const d = new Date(); let h = d.getHours(), m = d.getMinutes();
     const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-    $('watchTime').textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+    $('watchTime').textContent = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
     $('watchAmpm').textContent = ap;
-    $('watchDate').textContent = DAYS[d.getDay()] + ' ' + String(d.getDate()).padStart(2,'0') + ' ' + MONTHS[d.getMonth()];
+    $('watchDate').textContent = DAYS[d.getDay()] + ' ' + String(d.getDate()).padStart(2, '0') + ' ' + MONTHS[d.getMonth()];
   }
+
   function drawTicks() {
     const svg = $('watchSvg'), cx = 100, cy = 100, r1 = 93;
     for (let i = 0; i < 60; i++) {
-      const a = (i/60)*2*Math.PI - Math.PI/2, isH = i % 5 === 0;
+      const a = (i / 60) * 2 * Math.PI - Math.PI / 2, isH = i % 5 === 0;
       const r2 = isH ? 84 : 88;
-      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1', cx + r1*Math.cos(a)); line.setAttribute('y1', cy + r1*Math.sin(a));
-      line.setAttribute('x2', cx + r2*Math.cos(a)); line.setAttribute('y2', cy + r2*Math.sin(a));
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', cx + r1 * Math.cos(a)); line.setAttribute('y1', cy + r1 * Math.sin(a));
+      line.setAttribute('x2', cx + r2 * Math.cos(a)); line.setAttribute('y2', cy + r2 * Math.sin(a));
       line.setAttribute('stroke', isH ? 'rgba(46,139,94,0.45)' : 'rgba(60,100,60,0.18)');
       line.setAttribute('stroke-width', isH ? '2' : '1');
       line.setAttribute('stroke-linecap', 'round');
       svg.appendChild(line);
     }
   }
+
   let clockInt = null;
   function startClock() { updateClock(); clockInt = setInterval(updateClock, 10000); }
   function stopClock()  { clearInterval(clockInt); clockInt = null; }
@@ -385,12 +416,13 @@
     PHASES.forEach(ph => {
       const card = document.createElement('div');
       card.className = 'phase-card'; card.id = 'card_' + ph.id;
+      const subHtml = ph.name ? `<div class="phase-sub">${ph.name}</div>` : '';
       card.innerHTML = `
         <div class="phase-header">
           <div class="phase-num">${ph.id.slice(1)}</div>
           <div>
             <div class="phase-title">${ph.label} — ${ph.ratio}</div>
-            <div class="phase-sub">${ph.name}</div>
+            ${subHtml}
           </div>
         </div>
         <div class="diff-row">
@@ -420,7 +452,7 @@
         subRow.querySelectorAll('.sub-btn').forEach((sb, i) => {
           sb.classList.remove('active');
           const inh = ph.levels[d][i];
-          sb.textContent = `L${i+1}: ${inh}s`;
+          sb.textContent = `L${i + 1}: ${inh}s`;
           sb.title = phaseSecs(ph, inh).map((s, j) => ph.phases[j] + ' ' + s + 's').join(' → ');
         });
         $('prev_' + pid).innerHTML = 'Pick a sub-level below';
@@ -436,7 +468,7 @@
         document.querySelectorAll(`[data-ph="${pid}"].sub-btn`).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const ph = PHASES.find(x => x.id === pid);
-        const d  = state[pid].diff;
+        const d   = state[pid].diff;
         const inh = getInh(ph, d, s);
         const secs = phaseSecs(ph, inh);
         $('prev_' + pid).innerHTML = secs.map((sec, i) => `<span>${ph.phases[i]}</span> ${sec}s`).join(' · ');
@@ -459,7 +491,7 @@
       subRow.querySelectorAll('.sub-btn').forEach((sb, i) => {
         sb.classList.remove('active');
         const inh = ph.levels[d][i];
-        sb.textContent = `L${i+1}: ${inh}s`;
+        sb.textContent = `L${i + 1}: ${inh}s`;
         if (i === s) sb.classList.add('active');
       });
       const inh  = getInh(ph, d, s);
@@ -473,7 +505,7 @@
   function updateSummary() {
     const active = PHASES.filter(ph => state[ph.id].diff !== null && state[ph.id].sub !== null);
     $('siCount').textContent = active.length;
-    const pills = $('siPhases'); pills.innerHTML = '';
+    const pills    = $('siPhases'); pills.innerHTML = '';
     const totalSec = parseInt($('totalMin').value || 10) * 60;
     if (!active.length) { $('siTime').textContent = '—'; $('startBtn').disabled = true; return; }
     const perPhase = Math.floor(totalSec / active.length);
@@ -488,63 +520,119 @@
       pill.textContent = `${ph.ratio} × ${rounds}r`;
       pills.appendChild(pill);
     });
-    $('siTime').textContent = fmtMMSS(grand);
-    $('startBtn').disabled = false;
+    $('siTime').textContent  = fmtMMSS(grand);
+    $('startBtn').disabled   = false;
   }
 
   /* ── Audio ── */
   let audioCtx = null;
+
   function ensureCtx() {
-    if (!audioCtx) { const AC = window.AudioContext || window.webkitAudioContext; audioCtx = new AC(); }
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+    }
     if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   }
+
+  /*
+   * beep() — start-of-phase cue
+   * Called at startPhase() BEFORE the ticker runs, so no extra second is consumed.
+   */
   function beep(pn) {
     try {
-      ensureCtx(); const c = audioCtx, n = c.currentTime;
+      ensureCtx();
+      const c = audioCtx, n = c.currentTime;
       const o = c.createOscillator(), g = c.createGain();
       const nm = (pn || '').toLowerCase();
       o.type = nm.includes('inhale') ? 'sine' : nm.includes('hold') ? 'triangle' : 'sine';
       o.frequency.value = nm.includes('inhale') ? 660 : nm.includes('hold') ? 980 : 440;
-      g.gain.setValueAtTime(.0001, n); g.gain.exponentialRampToValueAtTime(.28, n+.01); g.gain.exponentialRampToValueAtTime(.0001, n+.22);
-      o.connect(g); g.connect(c.destination); o.start(n); o.stop(n+.24);
-    } catch(e) {}
+      g.gain.setValueAtTime(.0001, n);
+      g.gain.exponentialRampToValueAtTime(.28, n + .01);
+      g.gain.exponentialRampToValueAtTime(.0001, n + .22);
+      o.connect(g); g.connect(c.destination); o.start(n); o.stop(n + .24);
+    } catch (e) {}
   }
+
+  /*
+   * playPhaseEnd() — descending two-tone chime when any individual breathing phase finishes.
+   * Fires on every phase transition (inhale→hold, hold→exhale, exhale→next-inhale, etc.)
+   */
+  function playPhaseEnd() {
+    try {
+      ensureCtx();
+      const c = audioCtx, n = c.currentTime;
+      [660, 440].forEach((f, i) => {
+        const t = n + i * 0.18;
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(.0001, t);
+        g.gain.exponentialRampToValueAtTime(.35, t + .01);
+        g.gain.exponentialRampToValueAtTime(.0001, t + .38);
+        o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + .4);
+      });
+    } catch (e) {}
+  }
+
+  /* playEnd() — ascending chord at full session complete */
   function playEnd() {
     try {
-      ensureCtx(); const c = audioCtx, n = c.currentTime, m = c.createGain();
-      m.gain.setValueAtTime(.0001, n); m.gain.exponentialRampToValueAtTime(.6, n+.02); m.gain.exponentialRampToValueAtTime(.0001, n+4.5);
+      ensureCtx();
+      const c = audioCtx, n = c.currentTime, m = c.createGain();
+      m.gain.setValueAtTime(.0001, n);
+      m.gain.exponentialRampToValueAtTime(.6, n + .02);
+      m.gain.exponentialRampToValueAtTime(.0001, n + 4.5);
       m.connect(c.destination);
-      [440,550,660,880].forEach((f, i) => {
-        const t = n + i*.2, o = c.createOscillator(), g = c.createGain();
+      [440, 550, 660, 880].forEach((f, i) => {
+        const t = n + i * .2, o = c.createOscillator(), g = c.createGain();
         o.type = 'sine'; o.frequency.value = f;
-        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.55, t+.01); g.gain.exponentialRampToValueAtTime(.0001, t+1.8);
-        o.connect(g); g.connect(m); o.start(t); o.stop(t+1.8);
+        g.gain.setValueAtTime(.0001, t);
+        g.gain.exponentialRampToValueAtTime(.55, t + .01);
+        g.gain.exponentialRampToValueAtTime(.0001, t + 1.8);
+        o.connect(g); g.connect(m); o.start(t); o.stop(t + 1.8);
       });
-    } catch(e) {}
+    } catch (e) {}
   }
 
   /* ── Arc animation ── */
   const CIRC = 2 * Math.PI * 86;
   let arcFrame = null, arcStart = 0, arcDur = 0, arcOn = false;
-  const arcColor = pn => { const n = (pn||'').toLowerCase(); return n.includes('inhale') ? '#1D9E75' : n.includes('hold') ? '#D85A30' : '#378ADD'; };
+
+  const arcColor = pn => {
+    const n = (pn || '').toLowerCase();
+    return n.includes('inhale') ? '#1D9E75' : n.includes('hold') ? '#D85A30' : '#378ADD';
+  };
+
   function startArc(dur, pn) {
     cancelAnimationFrame(arcFrame);
     $('arcEl').style.stroke = arcColor(pn);
-    if ((pn||'').toLowerCase().includes('hold')) { arcOn = false; $('arcEl').style.strokeDashoffset = '0'; return; }
+    if ((pn || '').toLowerCase().includes('hold')) {
+      arcOn = false; $('arcEl').style.strokeDashoffset = '0'; return;
+    }
     arcOn = true; arcStart = performance.now(); arcDur = dur * 1000;
     const el = $('arcEl');
-    const run = now => { if (!arcOn) return; const p = Math.min((now-arcStart)/arcDur, 1); el.style.strokeDashoffset = CIRC*(1-p); if (p < 1) arcFrame = requestAnimationFrame(run); };
+    const run = now => {
+      if (!arcOn) return;
+      const p = Math.min((now - arcStart) / arcDur, 1);
+      el.style.strokeDashoffset = CIRC * (1 - p);
+      if (p < 1) arcFrame = requestAnimationFrame(run);
+    };
     arcFrame = requestAnimationFrame(run);
   }
-  function resetArc() { arcOn = false; cancelAnimationFrame(arcFrame); $('arcEl').style.strokeDashoffset = CIRC; $('arcEl').style.stroke = '#1D9E75'; }
+
+  function resetArc() {
+    arcOn = false; cancelAnimationFrame(arcFrame);
+    $('arcEl').style.strokeDashoffset = CIRC;
+    $('arcEl').style.stroke = '#1D9E75';
+  }
 
   /* ── Phase chip labels ── */
   function buildChips(phases, activeIdx) {
     const row = $('phaseChips'); row.innerHTML = '';
     phases.forEach((p, i) => {
-      const n = p.toLowerCase();
+      const n    = p.toLowerCase();
       const base = n.includes('inhale') ? 'ci' : n.includes('hold') ? 'ch' : 'ce';
-      const ch = document.createElement('div');
+      const ch   = document.createElement('div');
       ch.className = 'pchip ' + (i === activeIdx ? 'active-' + base : base);
       ch.textContent = p;
       row.appendChild(ch);
@@ -557,13 +645,17 @@
 
   const entry = () => sessionList[qIdx];
 
+  /*
+   * startPhase() — begins a new breathing step.
+   * The beep fires here, BEFORE the interval ticks, so it doesn't steal a second.
+   */
   function startPhase(idx) {
     const e = entry(); phaseIdx = idx;
     const dur = e.seconds[idx]; phaseRem = dur;
     $('arcCount').textContent = String(dur);
     $('arcPname').textContent = e.phases[idx];
     buildChips(e.phases, idx);
-    beep(e.phases[idx]);
+    beep(e.phases[idx]);       // fired before first tick — no time consumed
     startArc(dur, e.phases[idx]);
   }
 
@@ -571,17 +663,26 @@
     if (isPaused) return;
     phaseRem--;
     if (phaseRem > 0) { $('arcCount').textContent = String(phaseRem); return; }
-    const e = entry(), next = (phaseIdx + 1) % e.phases.length;
+
+    // Phase just ended — play the phase-end chime
+    playPhaseEnd();
+
+    const e    = entry();
+    const next = (phaseIdx + 1) % e.phases.length;
+
     if (next === 0) {
+      // Completed one full breath cycle
       e.roundsDone++;
       $('riRound').textContent = `Round ${e.roundsDone} / ${e.roundsTotal}`;
+
       if (e.roundsDone >= e.roundsTotal) {
+        // All rounds for this queue entry done — advance to next
         qIdx++;
         if (qIdx >= sessionList.length) { endSession(); return; }
         const ne = entry();
-        $('riPattern').textContent = `${ne.ph.ratio} — ${ne.ph.name}`;
+        $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
         $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
-        $('riStatus').textContent  = `Phase ${qIdx+1} of ${sessionList.length}`;
+        $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
         startPhase(0); return;
       }
     }
@@ -593,25 +694,31 @@
     const totalSec = parseInt($('totalMin').value || 10) * 60;
     const active   = PHASES.filter(ph => state[ph.id].diff !== null && state[ph.id].sub !== null);
     const perPhase = Math.floor(totalSec / active.length);
+
     sessionList = active.map(ph => {
-      const d = state[ph.id].diff, s = state[ph.id].sub;
+      const d  = state[ph.id].diff, s = state[ph.id].sub;
       const inh    = getInh(ph, d, s);
       const rd     = roundDur(ph, inh);
       const rounds = Math.max(1, Math.round(perPhase / rd));
       return { ph, phases: ph.phases, seconds: phaseSecs(ph, inh), roundsTotal: rounds, roundsDone: 0 };
     });
+
     qIdx = 0;
     const e = entry();
-    $('riPattern').textContent = `${e.ph.ratio} — ${e.ph.name}`;
+    $('riPattern').textContent = e.ph.ratio + (e.ph.name ? ' — ' + e.ph.name : '');
     $('riRound').textContent   = `Round 1 / ${e.roundsTotal}`;
     $('riStatus').textContent  = `Phase 1 of ${sessionList.length}`;
+
     $('watchWrap').style.display = 'none'; stopClock();
     $('runner').classList.add('on');
     startPhase(0);
-    clearInterval(ticker); isPaused = false; ticker = setInterval(tick, 1000);
-    $('startBtn').disabled = true;
-    $('pauseBtn').disabled = false;
-    $('stopBtn').disabled  = false;
+
+    clearInterval(ticker); isPaused = false;
+    ticker = setInterval(tick, 1000);
+
+    $('startBtn').disabled    = true;
+    $('pauseBtn').disabled    = false;
+    $('stopBtn').disabled     = false;
     $('pauseBtn').textContent = 'Pause';
     saveState();
   }
@@ -627,10 +734,16 @@
       $('pauseBtn').textContent = 'Pause';
       beep(entry().phases[phaseIdx]);
       const e = entry();
-      if (!(e.phases[phaseIdx]||'').toLowerCase().includes('hold')) {
-        arcOn = true; arcStart = performance.now() - (arcDur - phaseRem * 1000);
+      if (!(e.phases[phaseIdx] || '').toLowerCase().includes('hold')) {
+        arcOn    = true;
+        arcStart = performance.now() - (arcDur - phaseRem * 1000);
         const el = $('arcEl');
-        const run = now => { if (!arcOn) return; const p = Math.min((now-arcStart)/arcDur, 1); el.style.strokeDashoffset = CIRC*(1-p); if (p<1) arcFrame = requestAnimationFrame(run); };
+        const run = now => {
+          if (!arcOn) return;
+          const p = Math.min((now - arcStart) / arcDur, 1);
+          el.style.strokeDashoffset = CIRC * (1 - p);
+          if (p < 1) arcFrame = requestAnimationFrame(run);
+        };
         arcFrame = requestAnimationFrame(run);
       }
       $('riStatus').textContent = 'Running';
@@ -641,8 +754,9 @@
     clearInterval(ticker); ticker = null; resetArc(); isPaused = false;
     $('runner').classList.remove('on');
     $('watchWrap').style.display = ''; startClock();
-    $('startBtn').disabled = false;
-    $('pauseBtn').disabled = true; $('stopBtn').disabled = true;
+    $('startBtn').disabled    = false;
+    $('pauseBtn').disabled    = true;
+    $('stopBtn').disabled     = true;
     $('pauseBtn').textContent = 'Pause';
     if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
   }
@@ -657,13 +771,14 @@
     setTimeout(() => {
       $('runner').classList.remove('on');
       $('watchWrap').style.display = ''; startClock();
-      $('startBtn').disabled = false;
-      $('pauseBtn').disabled = true; $('stopBtn').disabled = true;
+      $('startBtn').disabled    = false;
+      $('pauseBtn').disabled    = true;
+      $('stopBtn').disabled     = true;
       if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
     }, 5000);
   }
 
-  /* ── Wire events ── */
+  /* ── Wire up events ── */
   $('startBtn').addEventListener('click', startSession);
   $('pauseBtn').addEventListener('click', togglePause);
   $('stopBtn').addEventListener('click',  stopSession);
@@ -679,6 +794,7 @@
     $('savedBanner').classList.add('show');
   }
   updateSummary();
+
 })();
 </script>
 </body>
