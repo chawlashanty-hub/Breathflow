@@ -288,11 +288,6 @@
 
   const STORAGE_KEY = 'breathflow_v1';
 
-  /*
-   * PHASES
-   * - Phase 1 keeps its subtitle "Equal Breathing"
-   * - Phases 2, 3, 4 have no subtitle (name: '')
-   */
   const PHASES = [
     {
       id: 'p1', label: 'Phase 1', ratio: '1:1', name: 'Equal Breathing',
@@ -537,7 +532,9 @@
 
   /*
    * beep() — start-of-phase cue
-   * Called at startPhase() BEFORE the ticker runs, so no extra second is consumed.
+   * Inhale : sine  880 Hz  — bright, high, energising
+   * Hold   : triangle 980 Hz — tense, buzzy, distinct timbre
+   * Exhale : triangle 220 Hz  — deep, low, releasing — very different from Inhale
    */
   function beep(pn) {
     try {
@@ -545,8 +542,13 @@
       const c = audioCtx, n = c.currentTime;
       const o = c.createOscillator(), g = c.createGain();
       const nm = (pn || '').toLowerCase();
-      o.type = nm.includes('inhale') ? 'sine' : nm.includes('hold') ? 'triangle' : 'sine';
-      o.frequency.value = nm.includes('inhale') ? 660 : nm.includes('hold') ? 980 : 440;
+      if (nm.includes('inhale')) {
+        o.type = 'sine';     o.frequency.value = 880;
+      } else if (nm.includes('hold')) {
+        o.type = 'triangle'; o.frequency.value = 980;
+      } else {
+        o.type = 'triangle'; o.frequency.value = 220;
+      }
       g.gain.setValueAtTime(.0001, n);
       g.gain.exponentialRampToValueAtTime(.28, n + .01);
       g.gain.exponentialRampToValueAtTime(.0001, n + .22);
@@ -555,44 +557,36 @@
   }
 
   /*
-   * playPhaseEnd() — descending two-tone chime when any individual breathing phase finishes.
-   * Fires on every phase transition (inhale→hold, hold→exhale, exhale→next-inhale, etc.)
+   * playAscendingChord(noteDuration)
+   * Shared ascending 4-note chord: 440 → 550 → 660 → 880 Hz
+   * noteDuration = ~0.9s for phase-end, ~1.8s for session-end (double)
    */
-  function playPhaseEnd() {
+  function playAscendingChord(noteDuration) {
     try {
       ensureCtx();
       const c = audioCtx, n = c.currentTime;
-      [660, 440].forEach((f, i) => {
-        const t = n + i * 0.18;
+      const m = c.createGain();
+      m.gain.setValueAtTime(.0001, n);
+      m.gain.exponentialRampToValueAtTime(.6, n + .02);
+      m.gain.exponentialRampToValueAtTime(.0001, n + noteDuration * 4 + .5);
+      m.connect(c.destination);
+      [440, 550, 660, 880].forEach((f, i) => {
+        const t = n + i * .2;
         const o = c.createOscillator(), g = c.createGain();
         o.type = 'sine'; o.frequency.value = f;
         g.gain.setValueAtTime(.0001, t);
-        g.gain.exponentialRampToValueAtTime(.35, t + .01);
-        g.gain.exponentialRampToValueAtTime(.0001, t + .38);
-        o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + .4);
+        g.gain.exponentialRampToValueAtTime(.55, t + .01);
+        g.gain.exponentialRampToValueAtTime(.0001, t + noteDuration);
+        o.connect(g); g.connect(m); o.start(t); o.stop(t + noteDuration + .05);
       });
     } catch (e) {}
   }
 
-  /* playEnd() — ascending chord at full session complete */
-  function playEnd() {
-    try {
-      ensureCtx();
-      const c = audioCtx, n = c.currentTime, m = c.createGain();
-      m.gain.setValueAtTime(.0001, n);
-      m.gain.exponentialRampToValueAtTime(.6, n + .02);
-      m.gain.exponentialRampToValueAtTime(.0001, n + 4.5);
-      m.connect(c.destination);
-      [440, 550, 660, 880].forEach((f, i) => {
-        const t = n + i * .2, o = c.createOscillator(), g = c.createGain();
-        o.type = 'sine'; o.frequency.value = f;
-        g.gain.setValueAtTime(.0001, t);
-        g.gain.exponentialRampToValueAtTime(.55, t + .01);
-        g.gain.exponentialRampToValueAtTime(.0001, t + 1.8);
-        o.connect(g); g.connect(m); o.start(t); o.stop(t + 1.8);
-      });
-    } catch (e) {}
-  }
+  /* Phase end — ascending chord, each note ~0.9s */
+  function playPhaseEnd() { playAscendingChord(0.9); }
+
+  /* Session complete — same chord, each note ~1.8s (double the phase-end duration) */
+  function playEnd() { playAscendingChord(1.8); }
 
   /* ── Arc animation ── */
   const CIRC = 2 * Math.PI * 86;
@@ -645,17 +639,13 @@
 
   const entry = () => sessionList[qIdx];
 
-  /*
-   * startPhase() — begins a new breathing step.
-   * The beep fires here, BEFORE the interval ticks, so it doesn't steal a second.
-   */
   function startPhase(idx) {
     const e = entry(); phaseIdx = idx;
     const dur = e.seconds[idx]; phaseRem = dur;
     $('arcCount').textContent = String(dur);
     $('arcPname').textContent = e.phases[idx];
     buildChips(e.phases, idx);
-    beep(e.phases[idx]);       // fired before first tick — no time consumed
+    beep(e.phases[idx]);
     startArc(dur, e.phases[idx]);
   }
 
@@ -664,19 +654,16 @@
     phaseRem--;
     if (phaseRem > 0) { $('arcCount').textContent = String(phaseRem); return; }
 
-    // Phase just ended — play the phase-end chime
     playPhaseEnd();
 
     const e    = entry();
     const next = (phaseIdx + 1) % e.phases.length;
 
     if (next === 0) {
-      // Completed one full breath cycle
       e.roundsDone++;
       $('riRound').textContent = `Round ${e.roundsDone} / ${e.roundsTotal}`;
 
       if (e.roundsDone >= e.roundsTotal) {
-        // All rounds for this queue entry done — advance to next
         qIdx++;
         if (qIdx >= sessionList.length) { endSession(); return; }
         const ne = entry();
