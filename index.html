@@ -35,7 +35,6 @@
   }
   .app { max-width: 780px; margin: 0 auto; }
 
-  /* ── Top row ── */
   .top-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
   .app-title { font-size: 22px; font-weight: 600; flex: 1; letter-spacing: -.3px; }
   .app-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
@@ -50,7 +49,6 @@
   .time-ctrl input:focus { border-color: var(--accent); }
   .time-ctrl span { font-size: 13px; color: var(--muted); }
 
-  /* ── Saved banner ── */
   .saved-banner {
     display: none; align-items: center; gap: 8px;
     background: var(--accent-light); border-radius: 10px;
@@ -74,7 +72,6 @@
   }
   .save-indicator.fade { opacity: 0; }
 
-  /* ── Phase cards grid ── */
   .phases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
   @media(max-width:540px){ .phases-grid { grid-template-columns: 1fr; } }
 
@@ -94,7 +91,6 @@
   .phase-title { font-size: 14px; font-weight: 600; }
   .phase-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-  /* ── Difficulty buttons ── */
   .diff-row { display: flex; gap: 6px; margin-bottom: 8px; }
   .diff-btn {
     flex: 1; padding: 7px 4px; font-size: 12px; font-weight: 600;
@@ -108,7 +104,6 @@
   .diff-btn.active.medium { background: var(--amber-bg);     border-color: var(--amber-border); color: var(--amber-text); }
   .diff-btn.active.hard   { background: var(--red-bg);       border-color: var(--red-border);   color: var(--red-text); }
 
-  /* ── Sub-level buttons ── */
   .sub-levels { display: none; gap: 5px; margin-bottom: 8px; }
   .sub-levels.open { display: flex; }
   .sub-btn {
@@ -124,7 +119,6 @@
   .level-preview { font-size: 11px; color: var(--muted); min-height: 16px; line-height: 1.5; }
   .level-preview span { color: var(--accent-2); font-weight: 600; }
 
-  /* ── Session summary ── */
   .session-info {
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 14px; padding: 12px 16px; margin-bottom: 16px;
@@ -139,8 +133,8 @@
     background: var(--accent-light); color: var(--accent-2); font-weight: 600;
   }
 
-  /* ── Buttons ── */
-  .btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+  /* ── Main control buttons ── */
+  .btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
   .btn-start {
     background: var(--accent); color: #fff; border: none;
     padding: 12px 32px; border-radius: 12px; font-size: 15px; font-weight: 600;
@@ -156,6 +150,16 @@
   }
   .btn-ctrl:disabled { opacity: .3; cursor: not-allowed; }
   .btn-ctrl:hover:not(:disabled) { background: var(--accent-light); }
+
+  /* ── Skip phase button ── */
+  .btn-skip {
+    padding: 12px 22px; border-radius: 12px; font-size: 15px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid var(--amber-border);
+    background: var(--amber-bg); color: var(--amber-text);
+    font-family: 'DM Sans', sans-serif; transition: opacity .15s;
+  }
+  .btn-skip:disabled { opacity: .3; cursor: not-allowed; }
+  .btn-skip:hover:not(:disabled) { opacity: .82; }
 
   /* ── Runner / Arc ── */
   .runner { display: none; flex-direction: column; align-items: center; gap: 14px; }
@@ -183,6 +187,16 @@
   .pchip.active-ci { background: var(--accent);     color: #fff; }
   .pchip.active-ch { background: var(--red-border);  color: #fff; }
   .pchip.active-ce { background: var(--blue-active); color: #fff; }
+
+  /* ── Skip toast ── */
+  .skip-toast {
+    font-size: 12px; color: var(--amber-text);
+    background: var(--amber-bg); border: 1px solid var(--amber-border);
+    border-radius: 8px; padding: 5px 14px;
+    text-align: center; min-height: 0;
+    opacity: 0; transition: opacity .4s ease;
+  }
+  .skip-toast.show { opacity: 1; }
 
   /* ── Idle watch ── */
   .watch-wrap {
@@ -238,10 +252,13 @@
   <div class="btns">
     <button class="btn-start" id="startBtn" disabled>Start session</button>
     <button class="btn-ctrl"  id="pauseBtn" disabled>Pause</button>
+    <button class="btn-skip"  id="skipBtn"  disabled>Skip phase</button>
     <button class="btn-ctrl"  id="stopBtn"  disabled>Stop</button>
   </div>
 
-  <!-- Idle watch (shown when not running) -->
+  <div class="skip-toast" id="skipToast"></div>
+
+  <!-- Idle watch -->
   <div class="watch-wrap" id="watchWrap">
     <div class="watch-face">
       <svg id="watchSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -259,7 +276,7 @@
     <div class="idle-hint">Select levels above and press Start</div>
   </div>
 
-  <!-- Active runner (shown when session running) -->
+  <!-- Active runner -->
   <div class="runner" id="runner">
     <div class="arc-wrap">
       <svg viewBox="0 0 200 200">
@@ -280,7 +297,7 @@
     </div>
   </div>
 
-</div><!-- /.app -->
+</div>
 
 <script>
 (() => {
@@ -311,7 +328,6 @@
     },
   ];
 
-  /* ── Helpers ── */
   const $ = id => document.getElementById(id);
   const phaseSecs = (ph, inh) => ph.parts.map(x => Math.round(inh * x / ph.parts[0]));
   const roundDur  = (ph, inh) => phaseSecs(ph, inh).reduce((a, b) => a + b, 0);
@@ -321,11 +337,9 @@
   };
   const getInh = (ph, d, s) => ph.levels[d][s];
 
-  /* ── UI state ── */
   const state = {};
   PHASES.forEach(p => { state[p.id] = { diff: null, sub: null }; });
 
-  /* ── LocalStorage ── */
   let saveTimer = null;
 
   function saveState() {
@@ -374,7 +388,6 @@
     updateSummary();
   }
 
-  /* ── Clock ── */
   const DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -405,7 +418,6 @@
   function startClock() { updateClock(); clockInt = setInterval(updateClock, 10000); }
   function stopClock()  { clearInterval(clockInt); clockInt = null; }
 
-  /* ── Build phase cards ── */
   function buildCards() {
     const grid = $('phasesGrid');
     PHASES.forEach(ph => {
@@ -496,7 +508,6 @@
     });
   }
 
-  /* ── Summary bar ── */
   function updateSummary() {
     const active = PHASES.filter(ph => state[ph.id].diff !== null && state[ph.id].sub !== null);
     $('siCount').textContent = active.length;
@@ -519,7 +530,12 @@
     $('startBtn').disabled   = false;
   }
 
-  /* ── Audio ── */
+  /* ═══════════════════════════════════════════════
+     AUDIO ENGINE
+     beep        — <0.5s cue at start of each step
+     playRoundEnd — full breath cycle complete (1.8s chord)
+     playEnd      — entire session done (3.6s chord, double)
+  ═══════════════════════════════════════════════ */
   let audioCtx = null;
 
   function ensureCtx() {
@@ -530,12 +546,6 @@
     if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   }
 
-  /*
-   * beep() — start-of-phase cue
-   * Inhale : sine  880 Hz  — bright, high, energising
-   * Hold   : triangle 980 Hz — tense, buzzy, distinct timbre
-   * Exhale : triangle 220 Hz  — deep, low, releasing — very different from Inhale
-   */
   function beep(pn) {
     try {
       ensureCtx();
@@ -545,48 +555,41 @@
       if (nm.includes('inhale')) {
         o.type = 'sine';     o.frequency.value = 880;
       } else if (nm.includes('hold')) {
-        o.type = 'triangle'; o.frequency.value = 980;
+        o.type = 'triangle'; o.frequency.value = 520;
       } else {
-        o.type = 'triangle'; o.frequency.value = 220;
+        o.type = 'sine';     o.frequency.value = 220;
       }
       g.gain.setValueAtTime(.0001, n);
-      g.gain.exponentialRampToValueAtTime(.28, n + .01);
-      g.gain.exponentialRampToValueAtTime(.0001, n + .22);
-      o.connect(g); g.connect(c.destination); o.start(n); o.stop(n + .24);
+      g.gain.exponentialRampToValueAtTime(.30, n + .015);
+      g.gain.exponentialRampToValueAtTime(.0001, n + .42);
+      o.connect(g); g.connect(c.destination);
+      o.start(n); o.stop(n + .45);
     } catch (e) {}
   }
 
-  /*
-   * playAscendingChord(noteDuration)
-   * Shared ascending 4-note chord: 440 → 550 → 660 → 880 Hz
-   * noteDuration = ~0.9s for phase-end, ~1.8s for session-end (double)
-   */
-  function playAscendingChord(noteDuration) {
+  function playAscendingChord(noteDur) {
     try {
       ensureCtx();
       const c = audioCtx, n = c.currentTime;
-      const m = c.createGain();
-      m.gain.setValueAtTime(.0001, n);
-      m.gain.exponentialRampToValueAtTime(.6, n + .02);
-      m.gain.exponentialRampToValueAtTime(.0001, n + noteDuration * 4 + .5);
-      m.connect(c.destination);
-      [440, 550, 660, 880].forEach((f, i) => {
-        const t = n + i * .2;
+      const master = c.createGain();
+      master.gain.setValueAtTime(.55, n);
+      master.gain.exponentialRampToValueAtTime(.0001, n + noteDur * 4 + 1.0);
+      master.connect(c.destination);
+      [440, 550, 660, 880].forEach((freq, i) => {
+        const t = n + i * 0.25;
         const o = c.createOscillator(), g = c.createGain();
-        o.type = 'sine'; o.frequency.value = f;
+        o.type = 'sine'; o.frequency.value = freq;
         g.gain.setValueAtTime(.0001, t);
-        g.gain.exponentialRampToValueAtTime(.55, t + .01);
-        g.gain.exponentialRampToValueAtTime(.0001, t + noteDuration);
-        o.connect(g); g.connect(m); o.start(t); o.stop(t + noteDuration + .05);
+        g.gain.exponentialRampToValueAtTime(.50, t + .02);
+        g.gain.exponentialRampToValueAtTime(.0001, t + noteDur);
+        o.connect(g); g.connect(master);
+        o.start(t); o.stop(t + noteDur + .05);
       });
     } catch (e) {}
   }
 
-  /* Phase end — ascending chord, each note ~0.9s */
-  function playPhaseEnd() { playAscendingChord(0.9); }
-
-  /* Session complete — same chord, each note ~1.8s (double the phase-end duration) */
-  function playEnd() { playAscendingChord(1.8); }
+  function playRoundEnd() { playAscendingChord(1.8); }
+  function playEnd()      { playAscendingChord(3.6); }
 
   /* ── Arc animation ── */
   const CIRC = 2 * Math.PI * 86;
@@ -620,7 +623,6 @@
     $('arcEl').style.stroke = '#1D9E75';
   }
 
-  /* ── Phase chip labels ── */
   function buildChips(phases, activeIdx) {
     const row = $('phaseChips'); row.innerHTML = '';
     phases.forEach((p, i) => {
@@ -631,6 +633,16 @@
       ch.textContent = p;
       row.appendChild(ch);
     });
+  }
+
+  /* ── Skip toast ── */
+  let toastTimer = null;
+  function showToast(msg) {
+    const el = $('skipToast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
   }
 
   /* ── Session engine ── */
@@ -654,13 +666,12 @@
     phaseRem--;
     if (phaseRem > 0) { $('arcCount').textContent = String(phaseRem); return; }
 
-    playPhaseEnd();
-
     const e    = entry();
     const next = (phaseIdx + 1) % e.phases.length;
 
     if (next === 0) {
       e.roundsDone++;
+      playRoundEnd();
       $('riRound').textContent = `Round ${e.roundsDone} / ${e.roundsTotal}`;
 
       if (e.roundsDone >= e.roundsTotal) {
@@ -674,6 +685,28 @@
       }
     }
     startPhase(next);
+  }
+
+  /*
+   * skipPhase()
+   * Jumps immediately to the next queue entry (next breathing pattern).
+   * If already on the last phase, ends the session.
+   */
+  function skipPhase() {
+    if (!ticker || isPaused) return;
+    const skippedLabel = entry().ph.ratio;
+    arcOn = false; cancelAnimationFrame(arcFrame);
+    qIdx++;
+    if (qIdx >= sessionList.length) {
+      showToast('Last phase skipped — session ending');
+      endSession(); return;
+    }
+    const ne = entry();
+    showToast(`Skipped ${skippedLabel} → moving to ${ne.ph.ratio}`);
+    $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
+    $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
+    $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
+    startPhase(0);
   }
 
   function startSession() {
@@ -705,6 +738,7 @@
 
     $('startBtn').disabled    = true;
     $('pauseBtn').disabled    = false;
+    $('skipBtn').disabled     = false;
     $('stopBtn').disabled     = false;
     $('pauseBtn').textContent = 'Pause';
     saveState();
@@ -715,10 +749,12 @@
     if (!isPaused) {
       isPaused = true; arcOn = false; cancelAnimationFrame(arcFrame);
       $('pauseBtn').textContent = 'Resume';
+      $('skipBtn').disabled     = true;
       $('riStatus').textContent = 'Paused';
     } else {
       isPaused = false;
       $('pauseBtn').textContent = 'Pause';
+      $('skipBtn').disabled     = false;
       beep(entry().phases[phaseIdx]);
       const e = entry();
       if (!(e.phases[phaseIdx] || '').toLowerCase().includes('hold')) {
@@ -743,6 +779,7 @@
     $('watchWrap').style.display = ''; startClock();
     $('startBtn').disabled    = false;
     $('pauseBtn').disabled    = true;
+    $('skipBtn').disabled     = true;
     $('stopBtn').disabled     = true;
     $('pauseBtn').textContent = 'Pause';
     if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
@@ -755,6 +792,7 @@
     $('arcPname').textContent = 'Done!';
     $('riStatus').textContent = 'Session complete — well done!';
     $('phaseChips').innerHTML = '';
+    $('skipBtn').disabled     = true;
     setTimeout(() => {
       $('runner').classList.remove('on');
       $('watchWrap').style.display = ''; startClock();
@@ -765,14 +803,13 @@
     }, 5000);
   }
 
-  /* ── Wire up events ── */
   $('startBtn').addEventListener('click', startSession);
   $('pauseBtn').addEventListener('click', togglePause);
+  $('skipBtn').addEventListener('click',  skipPhase);
   $('stopBtn').addEventListener('click',  stopSession);
   $('totalMin').addEventListener('input', () => { saveState(); updateSummary(); });
   $('clearBtn').addEventListener('click', clearSaved);
 
-  /* ── Init ── */
   buildCards();
   drawTicks(); startClock();
   const wasRestored = loadState();
