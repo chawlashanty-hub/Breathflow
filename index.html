@@ -34,7 +34,6 @@
     padding: 20px 16px 40px;
   }
   .app { max-width: 780px; margin: 0 auto; }
-
   .top-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
   .app-title { font-size: 22px; font-weight: 600; flex: 1; letter-spacing: -.3px; }
   .app-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
@@ -48,7 +47,6 @@
   }
   .time-ctrl input:focus { border-color: var(--accent); }
   .time-ctrl span { font-size: 13px; color: var(--muted); }
-
   .saved-banner {
     display: none; align-items: center; gap: 8px;
     background: var(--accent-light); border-radius: 10px;
@@ -71,16 +69,13 @@
     transition: opacity .6s ease; font-family: 'DM Mono', monospace;
   }
   .save-indicator.fade { opacity: 0; }
-
   .phases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
   @media(max-width:540px){ .phases-grid { grid-template-columns: 1fr; } }
-
   .phase-card {
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 16px; padding: 14px; transition: border-color .2s;
   }
   .phase-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
-
   .phase-header { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
   .phase-num {
     width: 28px; height: 28px; border-radius: 50%;
@@ -90,7 +85,6 @@
   }
   .phase-title { font-size: 14px; font-weight: 600; }
   .phase-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
   .diff-row { display: flex; gap: 6px; margin-bottom: 8px; }
   .diff-btn {
     flex: 1; padding: 7px 4px; font-size: 12px; font-weight: 600;
@@ -103,7 +97,6 @@
   .diff-btn.active.easy   { background: var(--accent-light); border-color: #5DCAA5; color: var(--accent-2); }
   .diff-btn.active.medium { background: var(--amber-bg);     border-color: var(--amber-border); color: var(--amber-text); }
   .diff-btn.active.hard   { background: var(--red-bg);       border-color: var(--red-border);   color: var(--red-text); }
-
   .sub-levels { display: none; gap: 5px; margin-bottom: 8px; }
   .sub-levels.open { display: flex; }
   .sub-btn {
@@ -115,10 +108,8 @@
   }
   .sub-btn:hover { border-color: var(--accent); color: var(--accent-2); }
   .sub-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
   .level-preview { font-size: 11px; color: var(--muted); min-height: 16px; line-height: 1.5; }
   .level-preview span { color: var(--accent-2); font-weight: 600; }
-
   .session-info {
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 14px; padding: 12px 16px; margin-bottom: 16px;
@@ -132,8 +123,6 @@
     font-size: 11px; padding: 3px 10px; border-radius: 99px;
     background: var(--accent-light); color: var(--accent-2); font-weight: 600;
   }
-
-  /* ── Main control buttons ── */
   .btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
   .btn-start {
     background: var(--accent); color: #fff; border: none;
@@ -150,8 +139,6 @@
   }
   .btn-ctrl:disabled { opacity: .3; cursor: not-allowed; }
   .btn-ctrl:hover:not(:disabled) { background: var(--accent-light); }
-
-  /* ── Skip phase button ── */
   .btn-skip {
     padding: 12px 22px; border-radius: 12px; font-size: 15px; font-weight: 600;
     cursor: pointer; border: 1.5px solid var(--amber-border);
@@ -160,11 +147,8 @@
   }
   .btn-skip:disabled { opacity: .3; cursor: not-allowed; }
   .btn-skip:hover:not(:disabled) { opacity: .82; }
-
-  /* ── Runner / Arc ── */
   .runner { display: none; flex-direction: column; align-items: center; gap: 14px; }
   .runner.on { display: flex; }
-
   .arc-wrap { position: relative; width: 200px; height: 200px; flex-shrink: 0; }
   .arc-wrap svg { position: absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); }
   .arc-num {
@@ -173,12 +157,10 @@
   }
   .arc-count { font-size: 52px; font-weight: 600; font-family: 'DM Mono', monospace; line-height: 1; }
   .arc-pname { font-size: 13px; color: var(--muted); }
-
   .runner-info { text-align: center; }
   .ri-pattern { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
   .ri-round { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
   .ri-status { font-size: 13px; color: var(--muted); margin-top: 8px; }
-
   .phase-chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
   .pchip { padding: 5px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; }
   .pchip.ci { background: var(--accent-light); color: var(--accent-2); }
@@ -187,18 +169,14 @@
   .pchip.active-ci { background: var(--accent);     color: #fff; }
   .pchip.active-ch { background: var(--red-border);  color: #fff; }
   .pchip.active-ce { background: var(--blue-active); color: #fff; }
-
-  /* ── Skip toast ── */
   .skip-toast {
     font-size: 12px; color: var(--amber-text);
     background: var(--amber-bg); border: 1px solid var(--amber-border);
     border-radius: 8px; padding: 5px 14px;
-    text-align: center; min-height: 0;
+    text-align: center;
     opacity: 0; transition: opacity .4s ease;
   }
   .skip-toast.show { opacity: 1; }
-
-  /* ── Idle watch ── */
   .watch-wrap {
     display: flex; flex-direction: column; align-items: center;
     gap: 14px; padding: 10px 0;
@@ -240,7 +218,6 @@
   </div>
 
   <div class="save-indicator" id="saveInd"></div>
-
   <div class="phases-grid" id="phasesGrid"></div>
 
   <div class="session-info">
@@ -258,7 +235,6 @@
 
   <div class="skip-toast" id="skipToast"></div>
 
-  <!-- Idle watch -->
   <div class="watch-wrap" id="watchWrap">
     <div class="watch-face">
       <svg id="watchSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -276,7 +252,6 @@
     <div class="idle-hint">Select levels above and press Start</div>
   </div>
 
-  <!-- Active runner -->
   <div class="runner" id="runner">
     <div class="arc-wrap">
       <svg viewBox="0 0 200 200">
@@ -532,10 +507,29 @@
 
   /* ═══════════════════════════════════════════════
      AUDIO ENGINE
-     beep        — <0.5s cue at start of each step
-     playRoundEnd — full breath cycle complete (1.8s chord)
-     playEnd      — entire session done (3.6s chord, double)
+
+     beep(pn)
+       Fires at the START of every inhale / hold / exhale step.
+       Inhale  : sine     880 Hz  — high, bright
+       Hold    : triangle 520 Hz  — mid, buzzy
+       Exhale  : sine     220 Hz  — low, deep
+       Duration ~0.45 s — well under 1 second.
+
+     playAscendingChord(noteDur)
+       Ascending 4-note chord: 440 → 550 → 660 → 880 Hz
+       notes staggered 0.25 s apart, each sustains noteDur seconds.
+
+     playPhaseComplete()
+       Fires when ALL rounds of ONE phase finish (e.g. 1:1 done all 5 rounds).
+       noteDur = 1.8 s
+
+     playSessionComplete()
+       Fires only when the entire session is over (all phases done).
+       noteDur = 3.6 s  (double of phase complete)
+
+     NO chord fires between individual steps or between rounds mid-phase.
   ═══════════════════════════════════════════════ */
+
   let audioCtx = null;
 
   function ensureCtx() {
@@ -572,7 +566,7 @@
       ensureCtx();
       const c = audioCtx, n = c.currentTime;
       const master = c.createGain();
-      master.gain.setValueAtTime(.55, n);
+      master.gain.setValueAtTime(.50, n);
       master.gain.exponentialRampToValueAtTime(.0001, n + noteDur * 4 + 1.0);
       master.connect(c.destination);
       [440, 550, 660, 880].forEach((freq, i) => {
@@ -580,7 +574,7 @@
         const o = c.createOscillator(), g = c.createGain();
         o.type = 'sine'; o.frequency.value = freq;
         g.gain.setValueAtTime(.0001, t);
-        g.gain.exponentialRampToValueAtTime(.50, t + .02);
+        g.gain.exponentialRampToValueAtTime(.48, t + .02);
         g.gain.exponentialRampToValueAtTime(.0001, t + noteDur);
         o.connect(g); g.connect(master);
         o.start(t); o.stop(t + noteDur + .05);
@@ -588,8 +582,11 @@
     } catch (e) {}
   }
 
-  function playRoundEnd() { playAscendingChord(1.8); }
-  function playEnd()      { playAscendingChord(3.6); }
+  /* All rounds of one phase done → 1.8s chord */
+  function playPhaseComplete()   { playAscendingChord(1.8); }
+
+  /* All phases done → 3.6s chord (double) */
+  function playSessionComplete() { playAscendingChord(3.6); }
 
   /* ── Arc animation ── */
   const CIRC = 2 * Math.PI * 86;
@@ -635,7 +632,6 @@
     });
   }
 
-  /* ── Skip toast ── */
   let toastTimer = null;
   function showToast(msg) {
     const el = $('skipToast');
@@ -670,28 +666,33 @@
     const next = (phaseIdx + 1) % e.phases.length;
 
     if (next === 0) {
+      /* Completed one full breath round */
       e.roundsDone++;
-      playRoundEnd();
       $('riRound').textContent = `Round ${e.roundsDone} / ${e.roundsTotal}`;
 
       if (e.roundsDone >= e.roundsTotal) {
+        /* ALL rounds of this phase done — play phase-complete chord then move on */
         qIdx++;
-        if (qIdx >= sessionList.length) { endSession(); return; }
+        if (qIdx >= sessionList.length) {
+          /* Last phase was also the last in session — session complete handles audio */
+          endSession();
+          return;
+        }
+        /* More phases remain — play phase-complete chord and continue */
+        playPhaseComplete();
         const ne = entry();
         $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
         $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
         $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
-        startPhase(0); return;
+        startPhase(0);
+        return;
       }
     }
+
+    /* Mid-phase: just start next step, no chord */
     startPhase(next);
   }
 
-  /*
-   * skipPhase()
-   * Jumps immediately to the next queue entry (next breathing pattern).
-   * If already on the last phase, ends the session.
-   */
   function skipPhase() {
     if (!ticker || isPaused) return;
     const skippedLabel = entry().ph.ratio;
@@ -787,7 +788,7 @@
 
   function endSession() {
     clearInterval(ticker); ticker = null; resetArc(); isPaused = false;
-    playEnd();
+    playSessionComplete();
     $('arcCount').textContent = '✓';
     $('arcPname').textContent = 'Done!';
     $('riStatus').textContent = 'Session complete — well done!';
