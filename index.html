@@ -753,10 +753,14 @@
       $('skipBtn').disabled     = true;
       $('riStatus').textContent = 'Paused';
     } else {
-      isPaused = false;
+    isPaused = false;
       $('pauseBtn').textContent = 'Pause';
       $('skipBtn').disabled     = false;
-      beep(entry().phases[phaseIdx]);
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().then(() => beep(entry().phases[phaseIdx]));
+      } else {
+        beep(entry().phases[phaseIdx]);
+      }
       const e = entry();
       if (!(e.phases[phaseIdx] || '').toLowerCase().includes('hold')) {
         arcOn    = true;
