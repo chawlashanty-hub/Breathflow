@@ -679,12 +679,19 @@
           return;
         }
         /* More phases remain — play phase-complete chord and continue */
-        playPhaseComplete();
-        const ne = entry();
-        $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
-        $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
-        $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
-        startPhase(0);
+  playPhaseComplete();
+        $('arcCount').textContent = '';
+        $('arcPname').textContent = '';
+        $('phaseChips').innerHTML = '';
+        $('riStatus').textContent = 'Rest... next phase starting soon';
+        setTimeout(() => {
+          if (!ticker) return;
+          const ne = entry();
+          $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
+          $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
+          $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
+          startPhase(0);
+        }, 6000);
         return;
       }
     }
