@@ -679,18 +679,27 @@
           return;
         }
         /* More phases remain — play phase-complete chord and continue */
-  playPhaseComplete();
-        $('arcCount').textContent = '';
-        $('arcPname').textContent = '';
+playPhaseComplete();
+        clearInterval(ticker); ticker = null;
+        resetArc();
+        $('arcCount').textContent = 'Rest';
+        $('arcPname').textContent = 'next phase soon';
         $('phaseChips').innerHTML = '';
         $('riStatus').textContent = 'Rest... next phase starting soon';
         setTimeout(() => {
-          if (!ticker) return;
+          if (isPaused) return;
+          ticker = setInterval(tick, 1000);
           const ne = entry();
           $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
           $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
           $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
-          startPhase(0);
+if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+              setTimeout(() => startPhase(0), 80);
+            });
+          } else {
+            startPhase(0);
+          }
         }, 6000);
         return;
       }
