@@ -551,7 +551,7 @@
       } else if (nm.includes('hold')) {
         o.type = 'triangle'; o.frequency.value = 520;
       } else {
-        o.type = 'sine';     o.frequency.value = 220;
+        o.type = 'sawtooth'; o.frequency.value = 560;
       }
       g.gain.setValueAtTime(.0001, n);
       g.gain.exponentialRampToValueAtTime(.30, n + .015);
@@ -682,25 +682,31 @@
 playPhaseComplete();
         clearInterval(ticker); ticker = null;
         resetArc();
-        $('arcCount').textContent = 'Rest';
-        $('arcPname').textContent = 'next phase soon';
-        $('phaseChips').innerHTML = '';
-        $('riStatus').textContent = 'Rest... next phase starting soon';
-        setTimeout(() => {
-          if (isPaused) return;
-          ticker = setInterval(tick, 1000);
-          const ne = entry();
-          $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
-          $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
-          $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
-if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume().then(() => {
-              setTimeout(() => startPhase(0), 80);
-            });
-          } else {
-            startPhase(0);
-          }
-        }, 6000);
+        $('arcPname').textContent = 'Rest';
+$('phaseChips').innerHTML = '';
+$('riStatus').textContent = 'Rest... next phase starting soon';
+let restCount = 10;
+$('arcCount').textContent = 'Rest ' + restCount;
+const restTick = setInterval(() => {
+  if (isPaused) return;
+  restCount--;
+  $('arcCount').textContent = 'Rest ' + restCount;
+  if (restCount <= 0) {
+    clearInterval(restTick);
+    ticker = setInterval(tick, 1000);
+    const ne = entry();
+    $('riPattern').textContent = ne.ph.ratio + (ne.ph.name ? ' — ' + ne.ph.name : '');
+    $('riRound').textContent   = `Round 1 / ${ne.roundsTotal}`;
+    $('riStatus').textContent  = `Phase ${qIdx + 1} of ${sessionList.length}`;
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().then(() => {
+        setTimeout(() => startPhase(0), 80);
+      });
+    } else {
+      startPhase(0);
+    }
+  }
+}, 1000);
         return;
       }
     }
