@@ -63,14 +63,52 @@
     font-family: 'DM Sans', sans-serif;
   }
   .saved-banner button:hover { background: rgba(29,158,117,.1); }
+  .dmd-section { margin-bottom: 20px; }
+  .dmd-row-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .07em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 8px;
+    display: inline-block; margin-bottom: 7px;
+  }
+  .dmd-row-label.easy   { background: var(--accent-light); color: var(--accent-2); }
+  .dmd-row-label.medium { background: var(--amber-bg);     color: var(--amber-text); }
+  .dmd-row-label.hard   { background: var(--red-bg);       color: var(--red-text); }
+  .dmd-row { margin-bottom: 14px; }
+  .dmd-btns { display: flex; gap: 8px; }
+  .dmd-btn {
+    flex: 1; padding: 10px 6px; font-size: 13px; font-weight: 500;
+    border-radius: 10px; border: 1.5px solid var(--border);
+    background: var(--card); color: var(--muted);
+    cursor: pointer; text-align: center;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .dmd-btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .dmd-btn.active.easy   { background: var(--accent-light); border-color: #5DCAA5; color: var(--accent-2); }
+  .dmd-btn.active.medium { background: var(--amber-bg);     border-color: var(--amber-border); color: var(--amber-text); }
+  .dmd-btn.active.hard   { background: var(--red-bg);       border-color: var(--red-border);   color: var(--red-text); }
+  .customise-toggle {
+    width: 100%; padding: 10px; font-size: 13px; font-weight: 500;
+    border-radius: 10px; border: 1.5px solid var(--border);
+    background: var(--card-inner); color: var(--muted);
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 4px; transition: all .15s;
+  }
+  .customise-toggle:hover { border-color: var(--accent); color: var(--accent-2); }
+  .customise-toggle.open  { background: var(--accent-light); border-color: #5DCAA5; color: var(--accent-2); }
+  .customise-toggle .chev { transition: transform .2s; display: inline-block; }
+  .customise-toggle.open .chev { transform: rotate(180deg); }
+  
   .save-indicator {
     font-size: 11px; color: var(--accent); text-align: right;
     margin-bottom: 10px; min-height: 15px;
     transition: opacity .6s ease; font-family: 'DM Mono', monospace;
   }
   .save-indicator.fade { opacity: 0; }
-  .phases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-  @media(max-width:540px){ .phases-grid { grid-template-columns: 1fr; } }
+ 
+  
+.phases-grid { display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.phases-grid.open { display: grid; }
+@media(max-width:540px){ .phases-grid.open { grid-template-columns: 1fr; } }
   .phase-card {
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 16px; padding: 14px; transition: border-color .2s;
@@ -209,7 +247,7 @@
       <span>min</span>
     </div>
   </div>
-  <div class="app-sub">Select levels for each phase you want — time is split equally across selected phases.</div>
+  <div class="app-sub">Select levels for each phase you want — time splits equally across active patterns.</div>
 
   <div class="saved-banner" id="savedBanner">
     <div class="saved-dot"></div>
@@ -218,18 +256,52 @@
   </div>
 
   <div class="save-indicator" id="saveInd"></div>
+  <div class="dmd-section">
+    <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">DMD-Breathflow — Quick Presets</div>
+
+    <div class="dmd-row">
+      <div class="dmd-row-label easy">Easy</div>
+      <div class="dmd-btns">
+        <button class="dmd-btn" data-diff="easy" data-sub="0">Level 1</button>
+        <button class="dmd-btn" data-diff="easy" data-sub="1">Level 2</button>
+        <button class="dmd-btn" data-diff="easy" data-sub="2">Level 3</button>
+      </div>
+    </div>
+
+    <div class="dmd-row">
+      <div class="dmd-row-label medium">Medium</div>
+      <div class="dmd-btns">
+        <button class="dmd-btn" data-diff="medium" data-sub="0">Level 1</button>
+        <button class="dmd-btn" data-diff="medium" data-sub="1">Level 2</button>
+        <button class="dmd-btn" data-diff="medium" data-sub="2">Level 3</button>
+      </div>
+    </div>
+
+    <div class="dmd-row">
+      <div class="dmd-row-label hard">Hard</div>
+      <div class="dmd-btns">
+        <button class="dmd-btn" data-diff="hard" data-sub="0">Level 1</button>
+        <button class="dmd-btn" data-diff="hard" data-sub="1">Level 2</button>
+        <button class="dmd-btn" data-diff="hard" data-sub="2">Level 3</button>
+      </div>
+    </div>
+
+    <button class="customise-toggle" id="customiseToggle">
+      Customise patterns <span class="chev">▾</span>
+    </button>
+  </div>
   <div class="phases-grid" id="phasesGrid"></div>
 
   <div class="session-info">
     <div class="si-item"><div class="si-label">Session total</div><div class="si-val" id="siTime">—</div></div>
-    <div class="si-item"><div class="si-label">Active phases</div><div class="si-val" id="siCount">0</div></div>
+    <div class="si-item"><div class="si-label">Active patterns</div><div class="si-val" id="siCount">0</div></div>
     <div class="si-phases" id="siPhases"></div>
   </div>
 
   <div class="btns">
     <button class="btn-start" id="startBtn" disabled>Start session</button>
     <button class="btn-ctrl"  id="pauseBtn" disabled>Pause</button>
-    <button class="btn-skip"  id="skipBtn"  disabled>Skip phase</button>
+    <button class="btn-skip"  id="skipBtn"  disabled>Skip pattern</button>
     <button class="btn-ctrl"  id="stopBtn"  disabled>Stop</button>
   </div>
 
@@ -354,7 +426,7 @@
     } catch (e) { return false; }
   }
 
-  function clearSaved() {
+function clearSaved() {
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     PHASES.forEach(ph => { state[ph.id].diff = null; state[ph.id].sub = null; });
     $('savedBanner').classList.remove('show');
@@ -837,7 +909,29 @@ const restTick = setInterval(() => {
   $('totalMin').addEventListener('input', () => { saveState(); updateSummary(); });
   $('clearBtn').addEventListener('click', clearSaved);
 
-  buildCards();
+ buildCards();
+
+  document.querySelectorAll('.dmd-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset.diff, s = parseInt(btn.dataset.sub);
+      document.querySelectorAll('.dmd-btn').forEach(b => b.classList.remove('active','easy','medium','hard'));
+      btn.classList.add('active', d);
+      PHASES.forEach(ph => { state[ph.id].diff = d; state[ph.id].sub = s; });
+      applyRestoredToUI();
+      saveState();
+      updateSummary();
+    });
+  });
+
+  document.getElementById('customiseToggle').addEventListener('click', () => {
+    const grid   = document.getElementById('phasesGrid');
+    const toggle = document.getElementById('customiseToggle');
+    const isOpen = grid.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+    toggle.querySelector('.chev').textContent = isOpen ? '▴' : '▾';
+    toggle.firstChild.textContent = isOpen ? 'Hide patterns ' : 'Customise patterns ';
+  });
+
   drawTicks(); startClock();
   const wasRestored = loadState();
   if (wasRestored) {
